@@ -1,0 +1,102 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Vite",
+      "type": "shell",
+      "command": "npm run dev",
+      "isBackground": true,
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Upgrade Level",
+      "type": "shell",
+      "command": "python3",
+      "args": [
+        "${workspaceFolder}/.internal/scripts/upgrade.py",
+        "--branch",
+        "${input:branchName}"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Reset Level",
+      "type": "shell",
+      "command": "python3",
+      "args": ["${workspaceFolder}/.internal/scripts/reset.py"],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "env": {
+          "CONFIRM_RESET": "${input:confirmReset}"
+        }
+      }
+    },
+    {
+      "label": "Import Assets Key",
+      "type": "shell",
+      "command": "${workspaceFolder}/.internal/scripts/import_assets_key.sh",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "clear": true
+      },
+      "options": {
+        "env": {
+          "ASSETS_KEY": "${input:assetsKey}"
+        }
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "confirmReset",
+      "type": "promptString",
+      "description": "Type 'yes' to confirm reset",
+      "default": ""
+    },
+    {
+      "id": "assetsKey",
+      "type": "promptString",
+      "description": "Enter the assets key",
+      "password": true,
+      "default": ""
+    },
+    {
+      "id": "branchName",
+      "type": "promptString",
+      "description": "Enter the branch name to upgrade from",
+      "default": "main"
+    }
+  ]
+}
