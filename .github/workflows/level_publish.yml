@@ -14,11 +14,6 @@ on:
         default: false
         type: boolean
 
-env:
-  AWS_ACCOUNT_ID: "728171921419"
-  AWS_REGION: us-west-2
-  DEPLOY_ROLE: DeployLevel
-
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: write # This is required for checking and tagging
@@ -42,17 +37,18 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Install uv
+      - name: Install poetry
         run: |
-          curl -Ls https://astral.sh/uv/install.sh | sh
+          python -m pip install --upgrade pip
+          pip install poetry==2.1.2
 
       - name: Install dependencies
         run: |
           cd .internal/deployer
-          uv pip install -r poetry.lock -e .
+          poetry install --no-interaction --no-root
 
       - name: Publish
         run: |
           echo "Publishing level..."
-          ehco "$JWT"
-          uv run deployer --jwt $JWT
+          echo "$JWT"
+          deployer --jwt $JWT
