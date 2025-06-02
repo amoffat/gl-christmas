@@ -1,6 +1,7 @@
 name: Level Publish
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       license_agreement:
@@ -21,7 +22,7 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: github.event.inputs.license_agreement == 'true' && github.event.inputs.license_disclosures == 'true'
+    # if: github.event.inputs.license_agreement == 'true' && github.event.inputs.license_disclosures == 'true'
     steps:
       - name: Get OIDC token
         id: get_token
