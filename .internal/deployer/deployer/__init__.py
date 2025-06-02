@@ -47,7 +47,6 @@ def main():
         help="JWT token for authentication",
     )
     args = parser.parse_args()
-    print("THING: ", args.jwt)
     repo = get_repo(args.jwt)
     if not repo:
         print("Could not extract repository from JWT.")
