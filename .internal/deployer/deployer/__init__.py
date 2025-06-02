@@ -36,7 +36,7 @@ def put_level(*, jwt, level_id):
         },
     )
     print(f"Status: {resp.status_code}")
-    print(resp.text)
+    print(resp.json())
 
 
 def main():
