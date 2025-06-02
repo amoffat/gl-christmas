@@ -50,5 +50,4 @@ jobs:
       - name: Publish
         run: |
           echo "Publishing level..."
-          echo "$JWT"
-          deployer --jwt $JWT
+          poetry run deployer --jwt $JWT
