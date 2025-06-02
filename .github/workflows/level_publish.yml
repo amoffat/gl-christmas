@@ -28,7 +28,7 @@ jobs:
         id: get_token
         run: |
           TOKEN_JSON=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL?audience=getlost-api")
+            "$ACTIONS_ID_TOKEN_REQUEST_URL")
           echo "JWT=$(echo $TOKEN_JSON | jq -r .value)" >> $GITHUB_ENV
 
       - name: Checkout
