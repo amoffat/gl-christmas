@@ -1,7 +1,6 @@
 name: Level Publish
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       license_agreement:
@@ -22,8 +21,16 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # if: github.event.inputs.license_agreement == 'true' && github.event.inputs.license_disclosures == 'true'
+    if: github.event.inputs.license_agreement == 'true' && github.event.inputs.license_disclosures == 'true'
     steps:
+      - name: Setup env
+        run: |
+          if [ "${{ github.ref_name }}" = "${{ github.event.repository.default_branch }}" ]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+          else
+            echo "ENV=qa" >> $GITHUB_ENV
+          fi
+
       - name: Get OIDC token
         id: get_token
         run: |
@@ -51,4 +58,4 @@ jobs:
       - name: Publish
         run: |
           echo "Publishing level..."
-          poetry run -P .internal/deployer deployer --jwt $JWT
+          poetry run -P .internal/deployer deployer --jwt $JWT --env $ENV

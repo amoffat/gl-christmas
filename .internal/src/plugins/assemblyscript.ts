@@ -38,15 +38,29 @@ class GLMetaAdder extends Transform {
   }
 }
 
-async function asyncify(wasmBuffer: Buffer): Promise<Buffer> {
+async function wasmOpt({
+  buffer,
+  asyncify,
+  optimize,
+}: {
+  buffer: Buffer;
+  asyncify?: boolean;
+  optimize?: string;
+}): Promise<Buffer> {
   const tempIn = join(tmpdir(), `input-${randomUUID()}.wasm`);
   const tempOut = join(tmpdir(), `output-${randomUUID()}.wasm`);
 
   try {
-    await writeFile(tempIn, wasmBuffer);
+    await writeFile(tempIn, buffer);
 
-    // Use execAsync instead of spawn
-    const args = [tempIn, "-o", tempOut, "--asyncify", "-n"];
+    const args = [tempIn, "-o", tempOut, "--enable-bulk-memory"];
+    if (asyncify) {
+      args.push("--asyncify", "-n");
+    }
+    if (optimize) {
+      args.push(`-O${optimize}`);
+    }
+
     await execAsync(`wasm-opt ${args.join(" ")}`);
 
     return await readFile(tempOut);
@@ -80,10 +94,15 @@ const packageJson = JSON.parse(
 );
 const tmplVersion = packageJson.version;
 
-async function compile(
-  engineVersion: string,
-  sourceFiles: string[]
-): Promise<BuildArtifacts> {
+async function compile({
+  engineVersion,
+  sourceFiles,
+  release,
+}: {
+  engineVersion: string;
+  sourceFiles: string[];
+  release: boolean;
+}): Promise<BuildArtifacts> {
   const debug = false;
   const outputFilePath = "main.wasm";
   const textFilePath = "main.wat";
@@ -130,7 +149,11 @@ async function compile(
       // The extension of the file
       const extension = fileName.split(".").pop();
       if (extension === "wasm") {
-        artifacts.wasm = await asyncify(contents as Buffer);
+        artifacts.wasm = await wasmOpt({
+          buffer: contents as Buffer,
+          asyncify: true,
+          optimize: release ? "3" : undefined,
+        });
       } else if (extension === "ts") {
         // Save the TypeScript definition file
         artifacts.dts = contents as string;
@@ -163,10 +186,13 @@ export default function compileWasmPlugin() {
           resolve(process.cwd(), "..", "engine_version.txt"),
           "utf-8"
         );
-        const url = req.url!;
+        const url = new URL(
+          `http://${process.env.HOST ?? "localhost"}${req.url}`
+        );
+        const target = url.searchParams.get("target") ?? "debug";
+        const release = target === "release";
 
-        const match = url.match(/^\/main.wasm$/);
-        if (match) {
+        if (url.pathname === "/main.wasm") {
           if (!sharedState.assemblyscriptTainted) {
             server.ws.send("gl:wasm-compiler", {
               msg: "Serving cached WASM",
@@ -187,7 +213,11 @@ export default function compileWasmPlugin() {
 
           try {
             const levelFile = resolve(codeDir, "main.ts");
-            const artifacts = await compile(engineVersion, [levelFile]);
+            const artifacts = await compile({
+              engineVersion,
+              sourceFiles: [levelFile],
+              release,
+            });
 
             const defsFile = resolve(shimDir, "main.d.ts");
             const jsFile = resolve(shimDir, "main.js");
