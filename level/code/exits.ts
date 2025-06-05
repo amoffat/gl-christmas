@@ -9,18 +9,23 @@ export function exits(): Exit[] {
   return [
     {
       name: "east",
+      dest: "abc",
     },
     {
       name: "west",
+      dest: "abc",
     },
     {
       name: "south",
+      dest: "abc",
     },
     {
       name: "well",
+      dest: "abc",
     },
     {
       name: "death",
+      dest: "abc",
     },
   ];
 }

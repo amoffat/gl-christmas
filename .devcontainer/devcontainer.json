@@ -17,6 +17,7 @@
       "password": "getlost"
     }
   },
+  "runArgs": ["--network=getlost"],
   "secrets": {
     "ASSETS_KEY": {
       "description": "License key for unlocking protected assets"

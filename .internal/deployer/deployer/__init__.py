@@ -1,6 +1,10 @@
 import argparse
 import hashlib
-import json
+import lzma
+import os
+import tarfile
+import tempfile
+from typing import IO
 
 import jwt
 import requests
@@ -11,12 +15,14 @@ from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
 
 api_urls = {
+    "local": "http://getlost-api:3000",
     "qa": "https://api.qa.getlost.gg",
     "prod": "https://api.getlost.gg",
 }
 api: str | None = None
 
 WASM_SERVER_BASE_URL = "https://localhost:5173"
+LEVEL_DIR = "/workspaces/gl-christmas/level"  # FIXME
 
 
 def get_repo(jwt_token):
@@ -30,37 +36,65 @@ def get_repo(jwt_token):
         return None
 
 
-def put_level(*, jwt, level_id, wasm):
-    payload = json.dumps(
-        {
-            "name": "Test Level",
-            "description": "This is a test level.",
-        }
-    )
+def put_level(*, jwt: str, level_id: str, wasm, art):
     path = f"/v1/levels/{level_id}"
     api_url = f"{api}{path}"
+
+    wasm.seek(0)
+    art.seek(0)
+
     resp = requests.put(
         api_url,
-        data=payload,
         headers={
-            "Content-Type": "application/json",
             "Authorization": f"Bearer {jwt}",
         },
         files={
             "wasm": ("main.wasm", wasm, "application/wasm"),
+            "art": ("art.tar.xz", art, "application/x-xz"),
         },
     )
     print(f"Status: {resp.status_code}")
-    print(resp.json())
+    print(f"Response: {resp.text}")
 
 
-def build_wasm():
+def build_wasm() -> IO[bytes]:
     path = "/main.wasm"
     qs_dict = {"target": "release"}
     qs = "&".join(f"{k}={v}" for k, v in qs_dict.items())
     url = f"{WASM_SERVER_BASE_URL}{path}?{qs}"
-    resp = requests.get(url, verify=False)
-    return resp.content
+    resp = requests.get(url, verify=False, stream=True)
+    resp.raise_for_status()
+    temp_wasm = tempfile.NamedTemporaryFile(delete=False, suffix=".wasm")
+    for chunk in resp.iter_content(chunk_size=8192):
+        temp_wasm.write(chunk)
+    temp_wasm.flush()
+    temp_wasm.seek(0)
+    # Open a new file object for reading, so it can be used as a file in requests
+    wasm_file = open(temp_wasm.name, "rb")
+    return wasm_file
+
+
+def collect_art() -> IO[bytes]:
+    """Create a tar.xz archive of all files in LEVEL_DIR and return a file-like object."""
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.xz") as temp_xz:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".tar") as temp_tar:
+            # Create tar archive
+            with tarfile.open(temp_tar.name, "w") as tar:
+                for root, dirs, files in os.walk(LEVEL_DIR):
+                    for file in files:
+                        full_path = os.path.join(root, file)
+                        arcname = os.path.relpath(full_path, LEVEL_DIR)
+                        tar.add(full_path, arcname=arcname)
+            # Compress with xz
+            temp_tar.seek(0)
+            with open(temp_tar.name, "rb") as f_in, lzma.open(temp_xz, "wb") as f_out:
+                f_out.write(f_in.read())
+        os.unlink(temp_tar.name)
+        temp_xz.flush()
+        temp_xz.seek(0)
+        # Open a new file object for reading, so it can be used as a file in requests
+        art_file = open(temp_xz.name, "rb")
+        return art_file
 
 
 def main():
@@ -68,7 +102,7 @@ def main():
     parser.add_argument(
         "--env",
         default="qa",
-        choices=["qa", "prod"],
+        choices=["qa", "prod", "local"],
         help="Environment to deploy to (default: qa)",
     )
     parser.add_argument(
@@ -81,17 +115,24 @@ def main():
     global api
     api = api_urls.get(args.env)
 
-    repo = get_repo(args.jwt)
-    if not repo:
-        print("Could not extract repository from JWT.")
-        exit(1)
+    wasm = build_wasm()
+    art = collect_art()
+
+    if args.env == "local":
+        repo = "amoffat/gl-level"
+    else:
+        repo = get_repo(args.jwt)
+        if not repo:
+            print("Could not extract repository from JWT.")
+            exit(1)
 
     level_id = hashlib.sha256(repo.encode("utf-8")).hexdigest()
-    wasm = build_wasm()
+
     put_level(
         jwt=args.jwt,
         level_id=level_id,
         wasm=wasm,
+        art=art,
     )
 
 
