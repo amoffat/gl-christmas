@@ -125,6 +125,7 @@ async function compile({
     "release",
     "--bindings",
     "raw",
+    "--importMemory",
     "--exportRuntime",
     "--path",
     asmLibDir,

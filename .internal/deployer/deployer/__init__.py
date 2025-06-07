@@ -21,8 +21,9 @@ api_urls = {
 }
 api: str | None = None
 
+# This is where we will fetch the WASM binary from. We rely on our
+# assemblyscript vite plugin to do the compilation and serve the WASM file.
 WASM_SERVER_BASE_URL = "https://localhost:5173"
-LEVEL_DIR = "/workspaces/gl-christmas/level"  # FIXME
 
 
 def get_repo(jwt_token):
@@ -74,16 +75,16 @@ def build_wasm() -> IO[bytes]:
     return wasm_file
 
 
-def collect_art() -> IO[bytes]:
+def collect_art(level_dir: str) -> IO[bytes]:
     """Create a tar.xz archive of all files in LEVEL_DIR and return a file-like object."""
     with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.xz") as temp_xz:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".tar") as temp_tar:
             # Create tar archive
             with tarfile.open(temp_tar.name, "w") as tar:
-                for root, dirs, files in os.walk(LEVEL_DIR):
+                for root, dirs, files in os.walk(level_dir):
                     for file in files:
                         full_path = os.path.join(root, file)
-                        arcname = os.path.relpath(full_path, LEVEL_DIR)
+                        arcname = os.path.relpath(full_path, level_dir)
                         tar.add(full_path, arcname=arcname)
             # Compress with xz
             temp_tar.seek(0)
@@ -110,13 +111,18 @@ def main():
         required=True,
         help="JWT token for authentication",
     )
+    parser.add_argument(
+        "--level",
+        required=True,
+        help="Directory containing the level files to be uploaded",
+    )
     args = parser.parse_args()
 
     global api
     api = api_urls.get(args.env)
 
     wasm = build_wasm()
-    art = collect_art()
+    art = collect_art(args.level)
 
     if args.env == "local":
         repo = "amoffat/gl-level"

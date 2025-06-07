@@ -9,23 +9,23 @@ export function exits(): Exit[] {
   return [
     {
       name: "east",
-      dest: "abc",
+      dest: "a6f53268c77b72a4771b89ae90fbef10cc3bdee8c640abf5a875a6386382712a:main",
     },
     {
       name: "west",
-      dest: "abc",
+      dest: "a6f53268c77b72a4771b89ae90fbef10cc3bdee8c640abf5a875a6386382712a:main",
     },
     {
       name: "south",
-      dest: "abc",
+      dest: "a6f53268c77b72a4771b89ae90fbef10cc3bdee8c640abf5a875a6386382712a:main",
     },
     {
       name: "well",
-      dest: "abc",
+      dest: "a6f53268c77b72a4771b89ae90fbef10cc3bdee8c640abf5a875a6386382712a:main",
     },
     {
       name: "death",
-      dest: "abc",
+      dest: "a6f53268c77b72a4771b89ae90fbef10cc3bdee8c640abf5a875a6386382712a:main",
     },
   ];
 }
