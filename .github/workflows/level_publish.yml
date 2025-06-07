@@ -61,4 +61,4 @@ jobs:
           poetry run -P .internal/deployer deployer \
             --jwt $JWT \
             --env $ENV \
-            --level-dir $GITHUB_WORKSPACE/level
+            --level $GITHUB_WORKSPACE/level
