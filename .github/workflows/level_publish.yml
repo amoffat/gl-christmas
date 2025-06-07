@@ -58,4 +58,7 @@ jobs:
       - name: Publish
         run: |
           echo "Publishing level..."
-          poetry run -P .internal/deployer deployer --jwt $JWT --env $ENV
+          poetry run -P .internal/deployer deployer \
+            --jwt $JWT \
+            --env $ENV \
+            --level-dir $GITHUB_WORKSPACE/level
