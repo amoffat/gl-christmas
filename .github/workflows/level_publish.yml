@@ -55,6 +55,22 @@ jobs:
         run: |
           poetry install -P .internal/deployer
 
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install npm dependencies
+        run: |
+          npm ci --prefix $GITHUB_WORKSPACE/.internal
+
+      - name: Start Vite
+        run: |
+          cd $GITHUB_WORKSPACE/.internal
+          nohup npx vite --port 5173 > vite.log 2>&1 &
+          sleep 5 # Give Vite time to start
+
       - name: Publish
         run: |
           echo "Publishing level..."
