@@ -50,6 +50,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install poetry==2.1.2
+          poetry config virtualenvs.in-project true
 
       - name: Install dependencies
         run: |
@@ -77,7 +78,9 @@ jobs:
         run: |
           echo "Publishing level..."
 
-          poetry run -P .internal/deployer deployer \
+          VENV_PATH="$(poetry env info --path)"
+          source "$VENV_PATH/bin/activate"
+          deployer \
             --jwt $JWT \
             --env $ENV \
             --level ./level
