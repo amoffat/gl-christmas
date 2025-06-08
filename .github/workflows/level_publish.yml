@@ -54,6 +54,7 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install -P .internal/deployer
+          poetry install -P .internal/spindler
 
       - name: Install Node.js
         uses: actions/setup-node@v4
