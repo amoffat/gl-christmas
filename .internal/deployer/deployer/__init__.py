@@ -57,8 +57,7 @@ def put_level(*, jwt: str, level_id: str, wasm, art):
             "art": ("art.tar.xz", art, "application/x-xz"),
         },
     )
-    print(f"Status: {resp.status_code}")
-    print(f"Response: {resp.text}")
+    resp.raise_for_status()  # Raise an error for bad responses
 
 
 def build_wasm() -> IO[bytes]:
