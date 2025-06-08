@@ -142,7 +142,7 @@ def main():
     api = api_urls.get(args.env)
 
     wasm = build_wasm()
-    level_dir = Path.resolve(args.level)
+    level_dir = Path(args.level).resolve()
     art = collect_art(level_dir)
 
     if args.env == "local":
