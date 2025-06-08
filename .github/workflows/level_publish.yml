@@ -72,6 +72,12 @@ jobs:
           nohup npx vite --port 5173 > vite.log 2>&1 &
           sleep 5 # Give Vite time to start
 
+      - name: Upload vite.log artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vite-log
+          path: .internal/vite.log
+
       - name: Publish
         run: |
           echo "Publishing level..."
