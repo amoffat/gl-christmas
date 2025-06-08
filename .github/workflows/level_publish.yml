@@ -70,12 +70,12 @@ jobs:
         run: |
           cd .internal
           nohup npx vite --port 5173 > vite.log 2>&1 &
-          sleep 5 # Give Vite time to start
+          sleep 10
 
       - name: Upload vite.log artifact
         uses: actions/upload-artifact@v4
         with:
-          name: vite-log
+          name: vite.log
           path: .internal/vite.log
 
       - name: Publish
