@@ -4,6 +4,7 @@ import lzma
 import os
 import tarfile
 import tempfile
+from pathlib import Path
 from typing import IO
 
 import jwt
@@ -122,7 +123,9 @@ def main():
     api = api_urls.get(args.env)
 
     wasm = build_wasm()
-    art = collect_art(args.level)
+
+    level_dir = Path.resolve(args.level)
+    art = collect_art(level_dir)
 
     if args.env == "local":
         repo = "amoffat/gl-level"

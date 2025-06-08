@@ -60,14 +60,15 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
+          cache-dependency-path: .internal/package-lock.json
 
       - name: Install npm dependencies
         run: |
-          npm ci --prefix $GITHUB_WORKSPACE/.internal
+          npm ci --prefix .internal
 
       - name: Start Vite
         run: |
-          cd $GITHUB_WORKSPACE/.internal
+          cd .internal
           nohup npx vite --port 5173 > vite.log 2>&1 &
           sleep 5 # Give Vite time to start
 
@@ -77,4 +78,4 @@ jobs:
           poetry run -P .internal/deployer deployer \
             --jwt $JWT \
             --env $ENV \
-            --level $GITHUB_WORKSPACE/level
+            --level ./level
