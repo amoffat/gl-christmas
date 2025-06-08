@@ -60,8 +60,5 @@ export default defineConfig(() => {
       levelPlugin(),
       levelWatcher(),
     ],
-    define: {
-      DEVCONTAINER: process.env.DEVCONTAINER,
-    },
   };
 });
