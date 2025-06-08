@@ -1,6 +1,6 @@
 import argparse
+import gzip
 import hashlib
-import lzma
 import os
 import subprocess
 import tarfile
@@ -54,7 +54,7 @@ def put_level(*, jwt: str, level_id: str, wasm, art):
         },
         files={
             "wasm": ("main.wasm", wasm, "application/wasm"),
-            "art": ("art.tar.xz", art, "application/x-xz"),
+            "art": ("art.tar.gz", art, "application/gzip"),
         },
     )
     resp.raise_for_status()  # Raise an error for bad responses
@@ -95,8 +95,8 @@ def build_wasm() -> IO[bytes]:
 
 
 def collect_art(level_dir: str) -> IO[bytes]:
-    """Create a tar.xz archive of all files in LEVEL_DIR and return a file-like object."""
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.xz") as temp_xz:
+    """Create a tar.gz archive of all files in LEVEL_DIR and return a file-like object."""
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.gz") as temp_gz:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".tar") as temp_tar:
             # Create tar archive
             with tarfile.open(temp_tar.name, "w") as tar:
@@ -105,15 +105,15 @@ def collect_art(level_dir: str) -> IO[bytes]:
                         full_path = os.path.join(root, file)
                         arcname = os.path.relpath(full_path, level_dir)
                         tar.add(full_path, arcname=arcname)
-            # Compress with xz
+            # Compress with gzip
             temp_tar.seek(0)
-            with open(temp_tar.name, "rb") as f_in, lzma.open(temp_xz, "wb") as f_out:
+            with open(temp_tar.name, "rb") as f_in, gzip.open(temp_gz, "wb") as f_out:
                 f_out.write(f_in.read())
         os.unlink(temp_tar.name)
-        temp_xz.flush()
-        temp_xz.seek(0)
+        temp_gz.flush()
+        temp_gz.seek(0)
         # Open a new file object for reading, so it can be used as a file in requests
-        art_file = open(temp_xz.name, "rb")
+        art_file = open(temp_gz.name, "rb")
         return art_file
 
 
