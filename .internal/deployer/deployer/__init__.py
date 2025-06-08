@@ -2,6 +2,7 @@ import argparse
 import hashlib
 import lzma
 import os
+import subprocess
 import tarfile
 import tempfile
 from pathlib import Path
@@ -15,6 +16,7 @@ from urllib3.exceptions import InsecureRequestWarning
 # suppress InsecureRequestWarning from requests
 urllib3.disable_warnings(InsecureRequestWarning)
 
+internal_dir = Path(__file__).resolve().parent.parent.parent
 api_urls = {
     "local": "http://getlost-api:3000",
     "qa": "https://api.qa.getlost.gg",
@@ -60,19 +62,36 @@ def put_level(*, jwt: str, level_id: str, wasm, art):
 
 
 def build_wasm() -> IO[bytes]:
-    path = "/main.wasm"
-    qs_dict = {"target": "release"}
-    qs = "&".join(f"{k}={v}" for k, v in qs_dict.items())
-    url = f"{WASM_SERVER_BASE_URL}{path}?{qs}"
-    resp = requests.get(url, verify=False, stream=True)
-    resp.raise_for_status()
-    temp_wasm = tempfile.NamedTemporaryFile(delete=False, suffix=".wasm")
-    for chunk in resp.iter_content(chunk_size=8192):
-        temp_wasm.write(chunk)
-    temp_wasm.flush()
-    temp_wasm.seek(0)
-    # Open a new file object for reading, so it can be used as a file in requests
-    wasm_file = open(temp_wasm.name, "rb")
+    """Compile WASM using the TypeScript CLI and return a file-like object for main.wasm."""
+    import tempfile
+
+    temp_dir = tempfile.TemporaryDirectory()
+    out_dir = Path(temp_dir.name)
+    script_dir = (internal_dir / "scripts").resolve()
+    compile_script = script_dir / "compile-wasm.ts"
+    # Use npx tsx to run the script, passing the output directory
+    result = subprocess.run(
+        [
+            "npx",
+            "tsx",
+            str(compile_script),
+            "--release",
+            "--outDir",
+            str(out_dir),
+        ],
+        cwd=str(script_dir),
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        print(result.stdout)
+        print(result.stderr)
+        raise RuntimeError("WASM compilation failed")
+    # Read the output WASM file from the temp directory
+    wasm_path = out_dir / "main.wasm"
+    wasm_file = open(wasm_path, "rb")
+    # Attach temp_dir to the file object so it doesn't get deleted
+    wasm_file._temp_dir = temp_dir  # type: ignore
     return wasm_file
 
 
@@ -123,7 +142,6 @@ def main():
     api = api_urls.get(args.env)
 
     wasm = build_wasm()
-
     level_dir = Path.resolve(args.level)
     art = collect_art(level_dir)
 

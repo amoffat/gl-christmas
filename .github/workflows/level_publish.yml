@@ -66,12 +66,6 @@ jobs:
         run: |
           npm ci --prefix .internal
 
-      - name: Start Vite
-        run: |
-          cd .internal
-          nohup npx vite --port 5173 > vite.log 2>&1 &
-          sleep 10
-
       - name: Upload vite.log artifact
         uses: actions/upload-artifact@v4
         with:
@@ -81,6 +75,7 @@ jobs:
       - name: Publish
         run: |
           echo "Publishing level..."
+
           poetry run -P .internal/deployer deployer \
             --jwt $JWT \
             --env $ENV \
