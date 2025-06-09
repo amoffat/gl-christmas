@@ -114,7 +114,7 @@ def collect_art(level_dir: Path, tar: tarfile.TarFile):
     """Add all files in LEVEL_DIR to the provided tarfile handle using pathlib.Path."""
     for file_path in level_dir.rglob("*"):
         if file_path.is_file():
-            arcname = str(file_path.relative_to(level_dir))
+            arcname = f"level/{file_path.relative_to(level_dir)}"
             tar.add(str(file_path), arcname=arcname)
 
 
