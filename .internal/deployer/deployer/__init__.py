@@ -57,7 +57,12 @@ def put_level(*, jwt: str, level_id: str, wasm, art):
             "art": ("art.tar.gz", art, "application/gzip"),
         },
     )
-    resp.raise_for_status()  # Raise an error for bad responses
+    try:
+        resp.raise_for_status()
+    except requests.HTTPError as e:
+        raise requests.HTTPError(
+            f"{e}\nResponse body: {resp.text}", response=resp
+        ) from e
 
 
 def build_wasm() -> IO[bytes]:
