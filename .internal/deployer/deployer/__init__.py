@@ -1,12 +1,9 @@
 import argparse
-import gzip
 import hashlib
-import os
 import subprocess
 import tarfile
 import tempfile
 from pathlib import Path
-from typing import IO
 
 import jwt
 import requests
@@ -40,21 +37,15 @@ def get_repo(jwt_token):
         return None
 
 
-def put_level(*, jwt: str, level_id: str, wasm, art):
-    path = f"/v1/levels/{level_id}"
+def put_level(*, jwt: str, level_id: str, assets):
+    # Step 1: Request presigned upload URL
+    path = f"/v1/levels/{level_id}/upload-url"
     api_url = f"{api}{path}"
 
-    wasm.seek(0)
-    art.seek(0)
-
-    resp = requests.put(
+    resp = requests.post(
         api_url,
         headers={
             "Authorization": f"Bearer {jwt}",
-        },
-        files={
-            "wasm": ("main.wasm", wasm, "application/wasm"),
-            "art": ("art.tar.gz", art, "application/gzip"),
         },
     )
     try:
@@ -64,9 +55,30 @@ def put_level(*, jwt: str, level_id: str, wasm, art):
             f"{e}\nResponse body: {resp.text}", response=resp
         ) from e
 
+    data = resp.json()
+    upload_url = data["url"]
+    fields = data["fields"]
 
-def build_wasm() -> IO[bytes]:
-    """Compile WASM using the TypeScript CLI and return a file-like object for main.wasm."""
+    assets.seek(0)
+    files = {
+        "file": ("assets.tar.gz", assets, "application/gzip"),
+    }
+    multipart_data = fields.copy()
+    resp2 = requests.post(
+        upload_url,
+        data=multipart_data,
+        files=files,
+    )
+    try:
+        resp2.raise_for_status()
+    except requests.HTTPError as e:
+        raise requests.HTTPError(
+            f"{e}\nResponse body: {resp2.text}", response=resp2
+        ) from e
+
+
+def collect_wasm(tar: tarfile.TarFile):
+    """Compile WASM using the TypeScript CLI and add main.wasm to the provided tarfile handle."""
     import tempfile
 
     temp_dir = tempfile.TemporaryDirectory()
@@ -91,35 +103,19 @@ def build_wasm() -> IO[bytes]:
         print(result.stdout)
         print(result.stderr)
         raise RuntimeError("WASM compilation failed")
-    # Read the output WASM file from the temp directory
+
+    # Add the output WASM file to the tarfile
     wasm_path = out_dir / "main.wasm"
-    wasm_file = open(wasm_path, "rb")
-    # Attach temp_dir to the file object so it doesn't get deleted
-    wasm_file._temp_dir = temp_dir  # type: ignore
-    return wasm_file
+    tar.add(wasm_path, arcname="main.wasm")
+    temp_dir.cleanup()
 
 
-def collect_art(level_dir: str) -> IO[bytes]:
-    """Create a tar.gz archive of all files in LEVEL_DIR and return a file-like object."""
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.gz") as temp_gz:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".tar") as temp_tar:
-            # Create tar archive
-            with tarfile.open(temp_tar.name, "w") as tar:
-                for root, dirs, files in os.walk(level_dir):
-                    for file in files:
-                        full_path = os.path.join(root, file)
-                        arcname = os.path.relpath(full_path, level_dir)
-                        tar.add(full_path, arcname=arcname)
-            # Compress with gzip
-            temp_tar.seek(0)
-            with open(temp_tar.name, "rb") as f_in, gzip.open(temp_gz, "wb") as f_out:
-                f_out.write(f_in.read())
-        os.unlink(temp_tar.name)
-        temp_gz.flush()
-        temp_gz.seek(0)
-        # Open a new file object for reading, so it can be used as a file in requests
-        art_file = open(temp_gz.name, "rb")
-        return art_file
+def collect_art(level_dir: Path, tar: tarfile.TarFile):
+    """Add all files in LEVEL_DIR to the provided tarfile handle using pathlib.Path."""
+    for file_path in level_dir.rglob("*"):
+        if file_path.is_file():
+            arcname = str(file_path.relative_to(level_dir))
+            tar.add(str(file_path), arcname=arcname)
 
 
 def main():
@@ -145,9 +141,13 @@ def main():
     global api
     api = api_urls.get(args.env)
 
-    wasm = build_wasm()
-    level_dir = Path(args.level).resolve()
-    art = collect_art(level_dir)
+    # Create a single tar.gz file for both wasm and art
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.gz") as temp_gz:
+        with tarfile.open(temp_gz.name, "w:gz") as tar:
+            collect_wasm(tar)
+            collect_art(Path(args.level).resolve(), tar)
+
+        assets = open(temp_gz.name, "rb")
 
     if args.env == "local":
         repo = "amoffat/gl-level"
@@ -162,8 +162,7 @@ def main():
     put_level(
         jwt=args.jwt,
         level_id=level_id,
-        wasm=wasm,
-        art=art,
+        assets=assets,
     )
 
 
