@@ -1,5 +1,4 @@
 import argparse
-import hashlib
 import subprocess
 import tarfile
 import tempfile
