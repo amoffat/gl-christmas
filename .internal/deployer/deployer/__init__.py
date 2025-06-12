@@ -26,17 +26,6 @@ api: str | None = None
 WASM_SERVER_BASE_URL = "https://localhost:5173"
 
 
-def get_repo(jwt_token):
-    """Extract the user/repo-name from the JWT token."""
-    try:
-        # Decode without verifying signature (we just want the claims)
-        payload = jwt.decode(jwt_token, options={"verify_signature": False})
-        return payload.get("repository")
-    except Exception as e:
-        print(f"Failed to extract repository from JWT: {e}")
-        return None
-
-
 def put_level(*, jwt: str, level_id: str, assets):
     # Step 1: Request presigned upload URL
     path = f"/v1/levels/{level_id}/upload-url"
@@ -150,14 +139,10 @@ def main():
         assets = open(temp_gz.name, "rb")
 
     if args.env == "local":
-        repo = "amoffat/gl-level"
+        level_id = "123456"
     else:
-        repo = get_repo(args.jwt)
-        if not repo:
-            print("Could not extract repository from JWT.")
-            exit(1)
-
-    level_id = hashlib.sha256(repo.encode("utf-8")).hexdigest()
+        claims = jwt.decode(args.jwt, options={"verify_signature": False})
+        level_id = claims["repository_id"]
 
     put_level(
         jwt=args.jwt,

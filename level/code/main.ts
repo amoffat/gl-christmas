@@ -11,7 +11,7 @@ import * as dialogue from "./generated/dialogue";
 
 export { initAsyncStack } from "@gl/utils/asyncify";
 export { card } from "./card";
-export { exits } from "./exits";
+export { entrances, exits } from "./gateways";
 export { choiceMadeEvent } from "./generated/dialogue";
 export { grantedMarkers, usedMarkers } from "./markers";
 export { pickups } from "./pickups";
