@@ -65,7 +65,7 @@ def put_level(*, jwt: str, level_id: str, assets):
         ) from e
 
 
-def collect_wasm(tar: tarfile.TarFile):
+def collect_wasm(*, tar: tarfile.TarFile, repo: str):
     """Compile WASM using the TypeScript CLI and add main.wasm to the provided tarfile handle."""
     import tempfile
 
@@ -82,6 +82,8 @@ def collect_wasm(tar: tarfile.TarFile):
             "--release",
             "--outDir",
             str(out_dir),
+            "--repo",
+            repo,
         ],
         cwd=str(script_dir),
         capture_output=True,
@@ -129,19 +131,21 @@ def main():
     global api
     api = api_urls.get(args.env)
 
-    # Create a single tar.gz file for both wasm and art
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.gz") as temp_gz:
-        with tarfile.open(temp_gz.name, "w:gz") as tar:
-            collect_wasm(tar)
-            collect_art(Path(args.level).resolve(), tar)
-
-        assets = open(temp_gz.name, "rb")
-
     if args.env == "local":
         level_id = "123456"
+        repo = "amoffat/local-repo"
     else:
         claims = jwt.decode(args.jwt, options={"verify_signature": False})
         level_id = claims["repository_id"]
+        repo = claims["repository"]
+
+    # Create a single tar.gz file for both wasm and art
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.gz") as temp_gz:
+        with tarfile.open(temp_gz.name, "w:gz") as tar:
+            collect_wasm(tar=tar, repo=repo)
+            collect_art(Path(args.level).resolve(), tar)
+
+        assets = open(temp_gz.name, "rb")
 
     put_level(
         jwt=args.jwt,

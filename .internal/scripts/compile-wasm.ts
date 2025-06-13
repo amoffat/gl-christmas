@@ -15,6 +15,11 @@ const argv = yargs(hideBin(process.argv))
     describe: "Output directory for artifacts",
   })
   .demandOption("outDir", "Output directory is required")
+  .option("repo", {
+    type: "string",
+    describe: "Repository name",
+  })
+  .demandOption("repo", "Repository name is required")
   .help()
   .parseSync();
 
@@ -39,8 +44,11 @@ async function main() {
   const levelFile = resolve(codeDir, "main.ts");
 
   const artifacts = await compileWasm({
-    engineVersion,
-    tmplVersion,
+    metadata: {
+      engineVersion,
+      tmplVersion,
+      repo: argv.repo,
+    },
     sourceFiles: [levelFile],
     release,
     asmLibDir,
