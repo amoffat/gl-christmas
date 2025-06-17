@@ -148,7 +148,6 @@ def main():
         with tarfile.open(temp_gz.name, "w:gz") as tar:
             collect_wasm(
                 tar=tar,
-                repo=repo,
                 metadata={
                     "levelId": level_id,
                     "repo": repo,
