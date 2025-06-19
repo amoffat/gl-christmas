@@ -64,6 +64,7 @@ export default function compileWasmPlugin() {
               metadata: {
                 engineVersion,
                 tmplVersion,
+                levelId: "936872190",
                 repo: "amoffat/getlost-level-template",
               },
               sourceFiles: [levelFile],
