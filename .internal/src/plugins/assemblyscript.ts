@@ -66,6 +66,7 @@ export default function compileWasmPlugin() {
                 tmplVersion,
                 levelId: "936872190",
                 repo: "amoffat/getlost-level-template",
+                commit: "main",
               },
               sourceFiles: [levelFile],
               release,
