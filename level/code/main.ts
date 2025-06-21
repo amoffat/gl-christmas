@@ -326,7 +326,6 @@ export function tickRoom(timestep: f32): void {
   // host.time.advanceSunTime(timestep * 1000);
 
   updateHeatFilter();
-  return;
 
   const timeSeconds: f32 = timestep / 1000;
   const heatRate: f32 = 0.02;
