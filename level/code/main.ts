@@ -312,7 +312,6 @@ export function tickRoom(timestep: f32): void {
   host.player.setAction(player.action);
   host.player.setPos(player.pos.x, player.pos.y);
   host.filters.setTiltShiftY(tsfid, player.pos.y - 10);
-  return;
 
   if (inWater && hearts < 5 && healingPool.tick(timestep)) {
     hearts++;
@@ -327,6 +326,7 @@ export function tickRoom(timestep: f32): void {
   // host.time.advanceSunTime(timestep * 1000);
 
   updateHeatFilter();
+  return;
 
   const timeSeconds: f32 = timestep / 1000;
   const heatRate: f32 = 0.02;
