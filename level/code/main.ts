@@ -310,10 +310,9 @@ export function pauseTick(timestep: f32): void {}
 export function tickRoom(timestep: f32): void {
   player.tick(timestep);
   host.player.setAction(player.action);
+  return;
   host.player.setPos(player.pos.x, player.pos.y);
   host.filters.setTiltShiftY(tsfid, player.pos.y - 10);
-
-  return;
 
   if (inWater && hearts < 5 && healingPool.tick(timestep)) {
     hearts++;
