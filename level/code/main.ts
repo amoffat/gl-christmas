@@ -313,6 +313,8 @@ export function tickRoom(timestep: f32): void {
   host.player.setPos(player.pos.x, player.pos.y);
   host.filters.setTiltShiftY(tsfid, player.pos.y - 10);
 
+  return;
+
   if (inWater && hearts < 5 && healingPool.tick(timestep)) {
     hearts++;
     host.ui.setRating(0, 0, hearts, 5, "heart", "red");
