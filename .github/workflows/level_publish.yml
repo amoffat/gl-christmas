@@ -81,3 +81,9 @@ jobs:
             --jwt $JWT \
             --env $ENV \
             --level ./level
+
+      - name: Make Summary
+        run: |
+          echo "## Level Published" > $GITHUB_STEP_SUMMARY
+          echo "Level has been successfully published to the $ENV environment." >> $GITHUB_STEP_SUMMARY
+          echo "You can view it [here](https://getlost.gg/${{ github.event.repository.id }})" >> $GITHUB_STEP_SUMMARY
