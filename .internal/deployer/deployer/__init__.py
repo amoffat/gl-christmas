@@ -27,7 +27,7 @@ api: str | None = None
 WASM_SERVER_BASE_URL = "https://localhost:5173"
 
 
-def put_level(*, jwt: str, level_id: str, assets):
+def put_level(*, jwt: str, level_id: str, commit: str, assets) -> str:
     # Step 1: Request presigned upload URL
     path = f"/v1/levels/{level_id}/upload-url"
     api_url = f"{api}{path}"
@@ -65,6 +65,8 @@ def put_level(*, jwt: str, level_id: str, assets):
         raise requests.HTTPError(
             f"{e}\nResponse body: {resp2.text}", response=resp2
         ) from e
+
+    return f"{level_id}-{commit}"
 
 
 def collect_wasm(*, tar: tarfile.TarFile, metadata: Any):
@@ -108,6 +110,55 @@ def collect_art(level_dir: Path, tar: tarfile.TarFile):
         if file_path.is_file():
             arcname = f"level/{file_path.relative_to(level_dir)}"
             tar.add(str(file_path), arcname=arcname)
+
+
+def poll_job(
+    jwt: str,
+    job_id: str,
+    level_id: str,
+    timeout: float = 60,
+):
+    """
+    Polls the publish job status endpoint until completion, failure, or timeout.
+    Args:
+        job_id (str): The job ID to poll.
+        level_id (str): The level ID associated with the job.
+        total_time (float): The total time in seconds to poll before timing out.
+    Raises:
+        RuntimeError: If the job fails, with the error message from the API.
+        requests.HTTPError: If the API call fails for any other reason.
+    Returns:
+        None: If the job completes successfully.
+    """
+    import time
+
+    start = time.time()
+    poll_interval = 2.0  # seconds
+    path = f"/v1/levels/{level_id}/publish-jobs/{job_id}"
+    api_url = f"{api}{path}"
+
+    while True:
+        resp = requests.get(
+            api_url,
+            headers={"Authorization": f"Bearer {jwt}"},
+            verify=False,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        print("Got job status:", data)
+
+        status = data["job"]["status"]
+        if status == "completed":
+            return data["level"]
+
+        elif status == "failed":
+            error_msg = data.get("job", {}).get("errorMessage", "Unknown error")
+            raise RuntimeError(error_msg)
+
+        if time.time() - start > timeout:
+            raise TimeoutError(f"Polling timed out after {timeout} seconds.")
+
+        time.sleep(poll_interval)
 
 
 def main():
@@ -158,12 +209,16 @@ def main():
 
         assets = open(temp_gz.name, "rb")
 
-    put_level(
+    job_id = put_level(
         jwt=args.jwt,
         level_id=level_id,
+        commit=commit,
         assets=assets,
     )
-
-
-if __name__ == "__main__":
-    main()
+    level = poll_job(
+        jwt=args.jwt,
+        job_id=job_id,
+        level_id=level_id,
+        timeout=60,
+    )
+    print("Level published successfully:", level)
