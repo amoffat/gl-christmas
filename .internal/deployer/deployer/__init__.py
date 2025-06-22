@@ -221,4 +221,4 @@ def main():
         level_id=level_id,
         timeout=60,
     )
-    print("Level published successfully:", level)
+    print("Level published successfully!", level)
