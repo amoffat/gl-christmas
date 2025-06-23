@@ -82,10 +82,12 @@ jobs:
           deployer \
             --jwt $JWT \
             --env $ENV \
-            --level ./level
+            --level ./level \
+            --summary summary.md
+          cat summary.md > $GITHUB_STEP_SUMMARY
 
       - name: Make Summary
         run: |
-          echo "## Level Published" > $GITHUB_STEP_SUMMARY
+          echo "## Level Published 🚀" > $GITHUB_STEP_SUMMARY
           echo "Level has been successfully published to the $ENV environment." >> $GITHUB_STEP_SUMMARY
           echo "You can view it [here](https://$LEVEL_DOMAIN/${{ github.event.repository.id }})" >> $GITHUB_STEP_SUMMARY

@@ -1,10 +1,11 @@
 import argparse
 import json
+import string
 import subprocess
 import tarfile
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, TypedDict
 
 import jwt
 import requests
@@ -14,13 +15,18 @@ from urllib3.exceptions import InsecureRequestWarning
 # suppress InsecureRequestWarning from requests
 urllib3.disable_warnings(InsecureRequestWarning)
 
-internal_dir = Path(__file__).resolve().parent.parent.parent
-api_urls = {
+THIS_DIR = Path(__file__).resolve().parent
+INTERNAL_DIR = THIS_DIR.parent.parent
+API_URLS = {
     "local": "http://getlost-api:3000",
     "qa": "https://api.qa.getlost.gg",
     "prod": "https://api.getlost.gg",
 }
-api: str | None = None
+GAME_URLS = {
+    "qa": "https://qa.getlost.gg",
+    "prod": "https://getlost.gg",
+}
+API: str | None = None
 
 # This is where we will fetch the WASM binary from. We rely on our
 # assemblyscript vite plugin to do the compilation and serve the WASM file.
@@ -30,7 +36,7 @@ WASM_SERVER_BASE_URL = "https://localhost:5173"
 def put_level(*, jwt: str, level_id: str, commit: str, assets) -> str:
     # Step 1: Request presigned upload URL
     path = f"/v1/levels/{level_id}/upload-url"
-    api_url = f"{api}{path}"
+    api_url = f"{API}{path}"
 
     resp = requests.post(
         api_url,
@@ -75,7 +81,7 @@ def collect_wasm(*, tar: tarfile.TarFile, metadata: Any):
 
     temp_dir = tempfile.TemporaryDirectory()
     out_dir = Path(temp_dir.name)
-    script_dir = (internal_dir / "scripts").resolve()
+    script_dir = (INTERNAL_DIR / "scripts").resolve()
     compile_script = script_dir / "compile-wasm.ts"
     # Use npx tsx to run the script, passing the output directory
     result = subprocess.run(
@@ -112,12 +118,21 @@ def collect_art(level_dir: Path, tar: tarfile.TarFile):
             tar.add(str(file_path), arcname=arcname)
 
 
+class Level(TypedDict):
+    id: str
+    repo: str
+    commit: str
+    name: str
+    path: str
+    mainEntrance: Optional[str]
+
+
 def poll_job(
     jwt: str,
     job_id: str,
     level_id: str,
     timeout: float = 60,
-):
+) -> Level:
     """
     Polls the publish job status endpoint until completion, failure, or timeout.
     Args:
@@ -135,7 +150,7 @@ def poll_job(
     start = time.time()
     poll_interval = 2.0  # seconds
     path = f"/v1/levels/{level_id}/publish-jobs/{job_id}"
-    api_url = f"{api}{path}"
+    api_url = f"{API}{path}"
 
     while True:
         resp = requests.get(
@@ -179,20 +194,27 @@ def main():
         required=True,
         help="Directory containing the level files to be uploaded",
     )
+    parser.add_argument(
+        "--summary",
+        required=False,
+        help="File path to write a markdown summary after publishing",
+    )
     args = parser.parse_args()
 
-    global api
-    api = api_urls.get(args.env)
+    global API
+    API = API_URLS.get(args.env)
 
     if args.env == "local":
         level_id = "123456"
         commit = "abc"
         repo = "amoffat/local-repo"
+        level_domain = "qa.getlost.gg"
     else:
         claims = jwt.decode(args.jwt, options={"verify_signature": False})
         level_id = claims["repository_id"]
         repo = claims["repository"]
         commit = claims["sha"]
+        level_domain = GAME_URLS[args.env]
 
     # Create a single tar.gz file for both wasm and art
     with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.gz") as temp_gz:
@@ -222,3 +244,16 @@ def main():
         timeout=60,
     )
     print("Level published successfully!", level)
+
+    # Write summary if requested
+    if args.summary:
+        template_path = Path(__file__).parent / "summary_template.md"
+        with open(template_path, "r") as f:
+            template = string.Template(f.read())
+
+        summary = template.safe_substitute(
+            level_domain=level_domain,
+            path=level["path"],
+        )
+        with open(args.summary, "w") as f:
+            f.write(summary)
