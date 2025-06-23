@@ -208,13 +208,13 @@ def main():
         level_id = "123456"
         commit = "abc"
         repo = "amoffat/local-repo"
-        level_domain = "qa.getlost.gg"
+        game_url = "qa.getlost.gg"
     else:
         claims = jwt.decode(args.jwt, options={"verify_signature": False})
         level_id = claims["repository_id"]
         repo = claims["repository"]
         commit = claims["sha"]
-        level_domain = GAME_URLS[args.env]
+        game_url = GAME_URLS[args.env]
 
     # Create a single tar.gz file for both wasm and art
     with tempfile.NamedTemporaryFile(delete=False, suffix=".tar.gz") as temp_gz:
@@ -252,8 +252,7 @@ def main():
             template = string.Template(f.read())
 
         summary = template.safe_substitute(
-            level_domain=level_domain,
-            path=level["path"],
+            link=f"{game_url}{level['path']}",
         )
         with open(args.summary, "w") as f:
             f.write(summary)
