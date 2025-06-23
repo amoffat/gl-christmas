@@ -167,7 +167,7 @@ def poll_job(
             return data["level"]
 
         elif status == "failed":
-            error_msg = data.get("job", {}).get("errorMessage", "Unknown error")
+            error_msg = data["job"].get("errorMessage", "Unknown error")
             raise RuntimeError(error_msg)
 
         if time.time() - start > timeout:

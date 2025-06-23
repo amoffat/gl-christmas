@@ -14,7 +14,7 @@ export function card(): Card {
       {
         name: "Andrew",
         role: "Author",
-        link: "https://badlink.com/GetLostTheGame",
+        link: "https://x.com/GetLostTheGame",
       },
       {
         name: "Andrew",
