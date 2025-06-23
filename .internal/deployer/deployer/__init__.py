@@ -252,6 +252,7 @@ def main():
             template = string.Template(f.read())
 
         summary = template.safe_substitute(
+            name=level["name"],
             link=f"{game_url}{level['path']}",
         )
         with open(args.summary, "w") as f:

@@ -1,5 +1,5 @@
 ## Level Published 🚀
 
-Congratulations, your level has been successfully published.
+Congratulations, $name has been successfully published.
 
-If your level has a main entrance (the first unattached entrance), you can preview your level [here.](link)
+[Level link]($link)
