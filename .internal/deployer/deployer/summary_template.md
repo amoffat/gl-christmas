@@ -1,5 +1,5 @@
 ## Level Published 🚀
 
-Congratulations, $name has been successfully published.
+Congratulations, _$name_ has been successfully published.
 
 [Level link]($link)
