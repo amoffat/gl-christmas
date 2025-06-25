@@ -259,14 +259,26 @@
                 {
                  "height":0,
                  "id":25,
-                 "name":"entry",
+                 "name":"main",
                  "point":true,
                  "rotation":0,
-                 "type":"",
+                 "type":"Entry",
                  "visible":true,
                  "width":0,
-                 "x":14,
-                 "y":-182
+                 "x":-15.3333333333333,
+                 "y":-175
+                }, 
+                {
+                 "height":0,
+                 "id":68,
+                 "name":"south",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Entry",
+                 "visible":true,
+                 "width":0,
+                 "x":-13.6666666666667,
+                 "y":21.6666666666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1308,7 +1320,7 @@
          "y":0
         }],
  "nextlayerid":19,
- "nextobjectid":68,
+ "nextobjectid":69,
  "orientation":"orthogonal",
  "properties":[
         {
