@@ -16,6 +16,10 @@ export function entrances(): Entrance[] {
       name: "main",
       exits: [],
     },
+    {
+      name: "south",
+      exits: [],
+    },
   ];
 }
 
