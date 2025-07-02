@@ -61,21 +61,19 @@ async function wasmOpt({
 }
 
 export async function compileWasm({
-  engineVersion,
-  tmplVersion,
   sourceFiles,
   release,
   asmLibDir,
   levelDir,
   genDir,
+  metadata,
 }: {
-  engineVersion: string;
-  tmplVersion: string;
   sourceFiles: string[];
   release: boolean;
   asmLibDir: string;
   levelDir: string;
   genDir: string;
+  metadata?: Record<string, string>;
 }): Promise<BuildArtifacts> {
   const debug = false;
   const outputFilePath = "main.wasm";
@@ -116,7 +114,7 @@ export async function compileWasm({
   const { error } = await asc.main(commandLineOptions, {
     stdout: process.stdout,
     stderr: stderr,
-    transforms: [new GLMetaAdder({ engineVersion, tmplVersion })],
+    transforms: [new GLMetaAdder(metadata)],
     writeFile: async (fileName, contents) => {
       const extension = fileName.split(".").pop();
       if (extension === "wasm") {

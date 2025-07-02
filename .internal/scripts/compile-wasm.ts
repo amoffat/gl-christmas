@@ -5,6 +5,11 @@ import { hideBin } from "yargs/helpers";
 import { compileWasm } from "../src/plugins/wasm-compiler";
 
 const argv = yargs(hideBin(process.argv))
+  .option("metadata", {
+    describe: "Inline json metadata object",
+    type: "string",
+  })
+  .demandOption("metadata", "Metadata is required")
   .option("release", {
     type: "boolean",
     default: false,
@@ -27,6 +32,7 @@ async function main() {
   const levelDir = resolve(repoDir, "level");
   const codeDir = resolve(repoDir, "level", "code");
   const genDir = resolve(codeDir, "generated");
+  const metadata = JSON.parse(argv.metadata);
 
   const packageJson = JSON.parse(
     readFileSync(resolve(internalDir, "package.json"), "utf-8")
@@ -39,8 +45,11 @@ async function main() {
   const levelFile = resolve(codeDir, "main.ts");
 
   const artifacts = await compileWasm({
-    engineVersion,
-    tmplVersion,
+    metadata: {
+      engineVersion,
+      tmplVersion,
+      ...metadata,
+    },
     sourceFiles: [levelFile],
     release,
     asmLibDir,

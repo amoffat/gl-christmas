@@ -61,8 +61,13 @@ export default function compileWasmPlugin() {
           try {
             const levelFile = resolve(codeDir, "main.ts");
             const artifacts = await compileWasm({
-              engineVersion,
-              tmplVersion,
+              metadata: {
+                engineVersion,
+                tmplVersion,
+                levelId: "936872190",
+                repo: "amoffat/getlost-level-template",
+                commit: "main",
+              },
               sourceFiles: [levelFile],
               release,
               asmLibDir,
