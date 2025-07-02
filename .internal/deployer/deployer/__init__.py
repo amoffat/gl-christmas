@@ -76,7 +76,8 @@ def put_level(*, jwt: str, level_id: str, commit: str, assets) -> str:
 
 
 def collect_wasm(*, tar: tarfile.TarFile, metadata: Any):
-    """Compile WASM using the TypeScript CLI and add main.wasm to the provided tarfile handle."""
+    """Compile WASM using the TypeScript CLI and add main.wasm to the provided
+    tarfile handle."""
     import tempfile
 
     temp_dir = tempfile.TemporaryDirectory()

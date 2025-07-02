@@ -1,3 +1,28 @@
+## 0.13.0 - 7/2/25
+
+- Decrypt restricted assets before publishing
+- Added `slow` default player controller
+- Adjust player animation
+- Bugfix multiline dialogue
+- Allow setting dialogue passage title by setting $title var
+- Use engine version 0.13.0
+
+## 0.12.1 - 6/26/25
+
+- Github workflow for publishing level
+- Require `entrances()` and `exits()` functions defined in `gateways.ts`
+- Add `Entry` tiled map object type
+- Remove `source` from required level credits (we derive this from the publish job)
+- `Restart Vite` VSCode convenience task
+- Make default music iOS compatible (ogg -> m4a)
+- Additional entrances on the map
+- Use engine `0.12.1`
+
+## 0.11.2 - 5/20/25
+
+- Bugfix where level upgrade can fail on docker bind mount race
+- Bugfix where level upgrade commits wrong version in message
+
 ## 0.11.1 - 5/19/25
 
 - Clean up readme instructions
