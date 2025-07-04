@@ -1138,7 +1138,9 @@ export function passage_909a9cff(): void {
   const params = new Map<string, string>();
   twine.incrementVisitCount("909a9cff");
 
-  twine.exit("well", true);
+  if (twine.exit("well", true)) {
+    return;
+  }
 
   host.text.display("909a9cff", title, text, choices, params, animate);
 }
