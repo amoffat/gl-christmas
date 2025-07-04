@@ -94,48 +94,44 @@ def upgrade_repo(*, target_path: Path, branch: str = "main") -> None:
     for item in target_path.iterdir():
         if should_remove(item):
             if item.is_dir():
+                print(f"Removing directory: {item}")
                 shutil.rmtree(item, ignore_errors=True)
             else:
+                print(f"Removing file: {item}")
                 item.unlink()
 
     # Move new contents into place
     for item in temp_clone_dir.iterdir():
         if should_restore(item):
-            shutil.move(str(item), str(target_path / item.name))
+            print(f"Restoring item: {item} to {target_path}")
+            shutil.move(str(item), str(target_path))
 
     # Restore 'level' directory
     if level_backup.exists():
+        print(f"Restoring 'level' directory from backup: {level_backup} to {level_dir}")
         shutil.move(str(level_backup), str(level_dir))
 
     # Cleanup
+    print(f"Cleaning up temporary clone directory: {temp_clone_dir}")
     shutil.rmtree(temp_clone_dir)
 
     # Commit changes
     subprocess.run(["git", "add", "-A"], cwd=str(target_path), check=True)
-    result = subprocess.run(
-        ["git", "status", "--porcelain"],
-        cwd=str(target_path),
-        capture_output=True,
-        text=True,
-    )
 
     with version_file.open() as f:
         version = json.load(f).get("version", "unknown")
 
-    if result.stdout.strip():  # If there are changes
-        subprocess.run(
-            ["git", "commit", "-m", f"+upgrade to {version}"],
-            cwd=str(target_path),
-            check=True,
-        )
-        subprocess.run(
-            ["bash", ".devcontainer/hooks/onCreate.sh"],
-            cwd=str(target_path),
-            check=True,
-        )
-        print(f"Upgrade complete! Committed as 'Upgrade to {version}'")
-    else:
-        print("No changes detected. Skipping commit.")
+    subprocess.run(
+        ["git", "commit", "--allow-empty", "-m", f"+upgrade to {version}"],
+        cwd=str(target_path),
+        check=True,
+    )
+    subprocess.run(
+        ["bash", ".devcontainer/hooks/onCreate.sh"],
+        cwd=str(target_path),
+        check=True,
+    )
+    print(f"Upgrade complete! Committed as 'Upgrade to {version}'")
 
 
 def main() -> NoReturn:

@@ -1,3 +1,13 @@
+## 0.15.1 - 7/4/25
+
+- Bugfixes with upgrade script
+
+## 0.15.0 - 7/4/25
+
+- Don't run remainder of dialog code if exit occurs
+- Use format-agnostic music
+- Bump engine version 0.15.0
+
 ## 0.13.1 - 7/2/25
 
 - Post template upgrade, run onCreate script
