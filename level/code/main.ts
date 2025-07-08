@@ -3,10 +3,9 @@ import * as host from "@gl/api/w2h/host";
 import { ColorMatrixFilter } from "@gl/filters/colormatrix";
 import { String } from "@gl/types/i18n";
 import { getSunEventName, SunEvent } from "@gl/types/time";
-import { Periodic } from "@gl/utils/periodic";
+import { Vec2 } from "@gl/utils/la/vec2";
+import { SnowParticles } from "@gl/utils/particles";
 import { Player } from "@gl/utils/player";
-import { createHeatFilter, RippleFilter } from "@gl/utils/ripple";
-import { isNight } from "@gl/utils/time";
 import * as dialogue from "./generated/dialogue";
 
 export { initAsyncStack } from "@gl/utils/asyncify";
@@ -18,166 +17,81 @@ export { pickups } from "./pickups";
 
 const log = host.debug.log;
 
-let tsfid!: i32;
-let player!: Player;
-let music!: i32;
-let hearts: f32 = 3;
-const overheatColor = "red";
-let nighttime: bool = false;
-let overheat: f32 = 0.0;
-let inWater: bool = false;
-const healingPool = new Periodic(200, 1000);
-const heatDamage = new Periodic(5000, 0);
-let heatFilter!: RippleFilter;
-let colorMatrix!: ColorMatrixFilter;
-let heatAmt: f32 = 0.0;
+export function strings(): String[] {
+  const ourStrings: String[] = [];
+  const dialogueStrings = dialogue.strings();
+  return ourStrings.concat(dialogueStrings);
+}
 
-/**
- * This function initializes your level. It's called once when the level is
- * loaded. Use it to set up your level, like setting the time of day, or adding
- * filters.
- */
+let player!: Player;
+let tsfid!: i32;
+let snow!: SnowParticles;
+let fog!: ColorMatrixFilter;
+let snowstorm!: i32;
+let music!: i32;
+
+// Modulate filter.overlay with a random amount, smoothly
+function modulateFog(speed: f32, min: f32, max: f32): void {
+  const now: f64 = ((Date.now() as f64) / 1000.0) * speed;
+
+  // Use a combination of trig functions for a semi-random modulation
+  const value: f64 =
+    (Math.sin(now) +
+      Math.cos(now * 1.33) +
+      Math.sin(now * 0.77 + Math.PI / 4)) /
+    3;
+
+  // Map the value from [-1, 1] to [0, 1]
+  const amt = (value + 1.0) / 2.0;
+  const fogAmt = (min + amt * (max - min)) as f32;
+
+  // fog.overlay(fogAmt, fogAmt, fogAmt);
+}
+
 export function initRoom(): void {
   player = Player.default();
 
-  heatFilter = createHeatFilter();
-  colorMatrix = new ColorMatrixFilter();
-  colorMatrix.hot();
+  fog = new ColorMatrixFilter();
+  const fogAmt: f32 = 0.4;
+  // fog.overlay(fogAmt, fogAmt, fogAmt);
 
-  tsfid = host.filters.addTiltShift(0.06);
+  snow = new SnowParticles("SnowFlakes.tsj", 0, 2000);
+  const baseWind = new Vec2(30, 10);
+  const maxSize: f32 = 0.5;
+  for (let i: u32 = 0; i < snow.num; i++) {
+    const amt: f32 = Math.pow((i as f32) / (snow.num as f32), 5) as f32;
+    const size: f32 = 0.35 + amt * maxSize;
+    snow.updateScale(i, size, size);
+    snow.winds[i] = baseWind.scaled(1 + amt * 10);
+  }
 
-  heatFilter.influence = heatAmt;
-  colorMatrix.influence = heatAmt;
+  tsfid = host.filters.addTiltShift(0.2);
 
-  /**
-   * You can set a fixed time for the level like this.
-   * Be sure to comment out the setSunTime call in `tickRoom` if you do this.
-   */
-  host.time.setSunEvent(SunEvent.SolarNoon, 0);
-
+  snowstorm = host.sound.loadSound({
+    name: "snowstorm-looped",
+    loop: true,
+    autoplay: true,
+    volume: 1.0,
+    sprites: [],
+  });
   music = host.sound.loadSound({
-    name: "Musics/music",
+    name: "Musics/Sketchbook 2024-09-22",
     loop: true,
     autoplay: true,
     volume: 0.5,
     sprites: [],
   });
 
-  host.ui.setRating(0, 0, hearts, 5, "heart", "red");
-  host.ui.setProgressBar(1, 0, "overheat", overheat, overheatColor);
-  updateHeatFilter();
+  host.time.setSunTime(Date.now());
 }
 
-/**
- * Sets the heat fx (ripple and color grading) based on the time of day.
- */
-function updateHeatFilter(): void {
-  const curSunEvent = host.time.getSunEvent();
-  heatAmt = 0;
-  if (curSunEvent === SunEvent.GoldenHourEnd) {
-    heatAmt = host.time.getSunEventProgress();
-  } else if (curSunEvent === SunEvent.GoldenHour) {
-    heatAmt = 1.0 - host.time.getSunEventProgress();
-  } else if (curSunEvent === SunEvent.SolarNoon) {
-    heatAmt = 1.0;
-  }
-  heatFilter.influence = heatAmt;
-  colorMatrix.influence = heatAmt;
+// Called when an async asset has been loaded
+export function assetLoadedEvent(_id: i32): void {}
+
+export function timeChangedEvent(event: SunEvent): void {
+  log(`Time changed: ${getSunEventName(event)}`);
 }
 
-/**
- * Called on level initialization to expose what strings we use in our level.
- * This is used for localization.
- *
- * @returns The strings that our level uses.
- */
-export function strings(): String[] {
-  const ourStrings: String[] = [
-    {
-      key: "overheat",
-      values: [
-        {
-          text: "Heat exhaustion",
-          lang: "en",
-        },
-      ],
-    },
-    {
-      key: "take-fruit",
-      values: [
-        {
-          text: "Steal",
-          lang: "en",
-        },
-      ],
-    },
-  ];
-  const dialogueStrings = dialogue.strings();
-  return ourStrings.concat(dialogueStrings);
-}
-
-/**
- * This function is called when the game receives a movement event. Use it to
- * adjust the player's position *in that direction.* In other words, this
- * function does not receive an absolute position, but a direction to move the
- * player.
- *
- * @param x The x *direction* to move the player.
- * @param y The y *direction* to move the player.
- */
-export function movePlayer(x: f32, y: f32): void {
-  player.direction.x = x;
-  player.direction.y = y;
-}
-
-/**
- * Called when a user-created timer is triggered.
- *
- * @param id The id of the timer created by `host.timer.start`.
- */
-export function timerEvent(id: u32): void {
-  log(`Timer event: ${id}`);
-}
-
-/**
- * Called when an async asset has been loaded.
- *
- * @param id The ID of the asset that was loaded.
- */
-export function assetLoadedEvent(id: i32): void {}
-
-/**
- * Called when an async event is triggered. This is usually used for things like
- * animations being finished. This is to support the fact that AS doesn't yet
- * support promises or async/await.
- *
- * @param id The async event id.
- */
-export function asyncEvent(id: i32): void {}
-
-/**
- * Called when a pickup event occurs.
- *
- * @param slug The slug of the pickup that was interacted with.
- * @param took Whether the player took the pickup or not.
- */
-export function pickupEvent(slug: string, took: bool): void {
-  log(`Pickup event: ${slug}, ${took}`);
-  if (slug === "flame" && took) {
-    host.lights.toggleLight("flame", false);
-    host.sensors.toggleSensor("flame", false);
-    host.npc.toggleNPC("flame", false);
-  } else if (slug === "fruit" && took) {
-    host.markers.record("stole-fruit");
-  }
-}
-
-/**
- * Called when a user-defined UI button is pressed or released.
- *
- * @param slug The slug of the button that was pressed.
- * @param down Whether the button was pressed down or released.
- */
 export function buttonPressEvent(slug: string, down: bool): void {
   log(`Button event: ${slug}, ${down}`);
 
@@ -188,24 +102,17 @@ export function buttonPressEvent(slug: string, down: bool): void {
     const passage = slug.split("/")[1];
     dialogue.dispatch(passage);
   }
-
-  if (slug === "fruit-taken" && down) {
-    host.pickup.offerPickup("fruit");
-    host.controls.setButtons([]);
-  }
 }
 
-/**
- * When a tile collision event occurs, this function is called. You can use this
- * similar to a sensor event, but it's triggered by the collision of a tile. Most
- * times you'll probably want to respond to a sensor event instead.
- *
- * @param tsTileId The tile id in the tileset that it's a part of.
- * @param gid The global tile id of the tile, unique among all tiles.
- * @param entered Whether the player entered or exited the tile.
- * @param column The column of the tile in the map.
- * @param row The row of the tile in the map.
- */
+export function movePlayer(x: f32, y: f32): void {
+  player.direction.x = x;
+  player.direction.y = y;
+}
+
+export function timerEvent(_name: string, userData: i32): void {}
+
+export function dialogClosedEvent(passageId: string): void {}
+
 export function tileCollisionEvent(
   initiator: string,
   tsTileId: i32,
@@ -217,17 +124,6 @@ export function tileCollisionEvent(
   // log(`Collision event: ${tsTileId}, ${gid}, ${entered} @ ${column}, ${row}`);
 }
 
-export function dialogClosedEvent(passageId: string): void {}
-
-/**
- * Called when a sensor event occurs.
- *
- * @param initiator The name of the entity that triggered the sensor. This is
- * usually the player, but can be other entities as well.
- * @param sensorName The name of the sensor that was triggered. This is set in
- * Tiled.
- * @param entered Whether the player entered or exited the sensor.
- */
 export function sensorEvent(
   initiator: string,
   sensorName: string,
@@ -238,116 +134,28 @@ export function sensorEvent(
       entered ? "entered" : "left"
     } '${sensorName}'`
   );
-
-  if (initiator !== "player") {
-    return;
-  }
-  if (sensorName === "flame") {
-    dialogue.stage_Fire(entered);
-  } else if (sensorName === "knight") {
-    dialogue.stage_Knight(entered);
-  } else if (sensorName === "well") {
-    dialogue.stage_Well(entered);
-  } else if (sensorName === "exit-east" && entered) {
-    host.map.exit("east", false);
-  } else if (sensorName === "exit-west" && entered) {
-    host.map.exit("west", false);
-  } else if (sensorName === "exit-south" && entered) {
-    host.map.exit("south", false);
-  } else if (sensorName === "nazar") {
-    dialogue.stage_Nazar(entered);
-  } else if (sensorName === "water") {
-    inWater = entered;
-  } else if (sensorName === "fruit") {
-    if (entered) {
-      host.controls.setButtons([
-        {
-          label: "take-fruit",
-          slug: "fruit-taken",
-        },
-      ]);
-    } else {
-      host.controls.setButtons([]);
-    }
-  }
 }
 
-/**
- * Called when there's a time event change, for example, from Sunrise to
- * SunriseEnd
- */
-export function timeChangedEvent(event: SunEvent): void {
-  log(`Time changed: ${getSunEventName(event)}`);
-
-  nighttime = isNight(event);
-  host.lights.toggleLight("flame", nighttime);
-  host.sensors.toggleSensor("flame", nighttime);
-  host.npc.toggleNPC("flame", nighttime);
-
-  const lights = ["nazar-light", "house-light-1"];
-  for (let i = 0; i < lights.length; i++) {
-    host.lights.toggleLight(lights[i], nighttime);
-  }
-
-  updateHeatFilter();
+export function choiceMade(textSlug: string, choice: string): void {
+  log(`Choice made for ${textSlug}: ${choice}`);
 }
 
-/**
- * Called when the game is paused, `tickRoom` stops ticking and this function
- * starts. Use this to advance things that you want to keep moving while the
- * game is paused.
- *
- * @param timestep The time since the last tick in milliseconds.
- */
-export function pauseTick(timestep: f32): void {}
+export function pauseTick(timestep: f32): void {
+  snow.tick(timestep);
+}
 
-/**
- * Called every frame. Use this to update your level in real-time. Timestep is
- * in milliseconds.
- *
- * @param timestep The time since the last tick in milliseconds.
- */
+const now = Date.UTC(2025, 1, 15, 9, 0, 0, 0);
+let offset: i64 = 0;
 export function tickRoom(timestep: f32): void {
   player.tick(timestep);
+  snow.tick(timestep);
+  modulateFog(2.0, 0.1, 0.7);
   host.player.setAction(player.action);
   host.player.setPos(player.pos.x, player.pos.y);
-  host.filters.setTiltShiftY(tsfid, player.pos.y - 10);
+  host.filters.setTiltShiftY(tsfid, player.pos.y);
 
-  if (inWater && hearts < 5 && healingPool.tick(timestep)) {
-    hearts++;
-    host.ui.setRating(0, 0, hearts, 5, "heart", "red");
-  }
-
-  // This syncs the time of day with the real world.
-  host.time.setSunTime(Date.now());
-
-  // Or we can advance the time of day manually, increasing the step size to
-  // make the days faster.
-  // host.time.advanceSunTime(timestep * 1000);
-
-  updateHeatFilter();
-
-  const timeSeconds: f32 = timestep / 1000;
-  const heatRate: f32 = 0.02;
-  if (heatAmt > 0) {
-    overheat += timeSeconds * heatRate * heatAmt;
-  } else {
-    overheat -= timeSeconds * heatRate;
-  }
-
-  if (inWater) {
-    overheat -= timeSeconds * heatRate * 5;
-  }
-
-  overheat = Math.max(0, Math.min(overheat, 1)) as f32;
-  if (overheat >= 1 && heatDamage.tick(timestep)) {
-    hearts--;
-    host.ui.setRating(0, 0, hearts, 5, "heart", "red");
-  }
-
-  if (hearts <= 0) {
-    host.map.exit("death", true);
-  }
-
-  host.ui.setProgressBar(1, 0, "overheat", overheat, overheatColor);
+  offset = offset + ((timestep * 3000) as i64);
+  host.time.setSunTime(now);
+  // host.time.setSunTime(now + offset);
+  // host.time.setSunColor(1, 0, 0, 1.0);
 }
