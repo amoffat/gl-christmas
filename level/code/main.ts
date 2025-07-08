@@ -82,7 +82,12 @@ export function initRoom(): void {
     sprites: [],
   });
 
-  host.time.setSunEvent(SunEvent.SolarNoon, 0);
+  host.time.setSunTime(Date.now());
+
+  // Tick for about a second so it doesn't start with the snow clumped together
+  for (let i: u32 = 0; i < 120; i++) {
+    snow.tick((1000 / 60.0) as f32);
+  }
 }
 
 // Called when an async asset has been loaded
@@ -142,10 +147,6 @@ export function sensorEvent(
       entered ? "entered" : "left"
     } '${sensorName}'`
   );
-}
-
-export function choiceMade(textSlug: string, choice: string): void {
-  log(`Choice made for ${textSlug}: ${choice}`);
 }
 
 export function pauseTick(timestep: f32): void {
