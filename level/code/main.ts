@@ -148,7 +148,7 @@ const now = Date.UTC(2025, 1, 15, 9, 0, 0, 0);
 let offset: i64 = 0;
 export function tickRoom(timestep: f32): void {
   player.tick(timestep);
-  snow.tick(timestep);
+  // snow.tick(timestep);
   modulateFog(2.0, 0.1, 0.7);
   host.player.setAction(player.action);
   host.player.setPos(player.pos.x, player.pos.y);
