@@ -109,7 +109,15 @@ export function movePlayer(x: f32, y: f32): void {
   player.direction.y = y;
 }
 
-export function timerEvent(_name: string, userData: i32): void {}
+export function pickupEvent(slug: string, took: bool): void {
+  log(`Pickup event: ${slug}, ${took}`);
+}
+
+export function timerEvent(id: u32): void {
+  log(`Timer event: ${id}`);
+}
+
+export function asyncEvent(id: i32): void {}
 
 export function dialogClosedEvent(passageId: string): void {}
 
