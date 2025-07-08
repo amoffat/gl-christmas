@@ -14,6 +14,7 @@
             "scaleInDock": 1
         },
         "Gnome_01_idle (16x24).tsj": {
+            "dynamicWrapping": false,
             "scaleInDock": 1
         },
         "Items.tsj": {
@@ -36,6 +37,7 @@
             "scaleInDock": 1
         },
         "SnowFlakes.tsj": {
+            "dynamicWrapping": false,
             "scaleInDock": 1
         },
         "Spirit.tsj": {

@@ -82,7 +82,7 @@ export function initRoom(): void {
     sprites: [],
   });
 
-  host.time.setSunTime(Date.now());
+  host.time.setSunEvent(SunEvent.SolarNoon, 0);
 }
 
 // Called when an async asset has been loaded
@@ -148,14 +148,12 @@ const now = Date.UTC(2025, 1, 15, 9, 0, 0, 0);
 let offset: i64 = 0;
 export function tickRoom(timestep: f32): void {
   player.tick(timestep);
-  // snow.tick(timestep);
+  snow.tick(timestep);
   modulateFog(2.0, 0.1, 0.7);
   host.player.setAction(player.action);
   host.player.setPos(player.pos.x, player.pos.y);
   host.filters.setTiltShiftY(tsfid, player.pos.y);
 
-  offset = offset + ((timestep * 3000) as i64);
-  host.time.setSunTime(now);
-  // host.time.setSunTime(now + offset);
-  // host.time.setSunColor(1, 0, 0, 1.0);
+  // This syncs the time of day with the real world.
+  host.time.setSunTime(Date.now());
 }
