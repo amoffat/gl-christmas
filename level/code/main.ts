@@ -17,12 +17,6 @@ export { pickups } from "./pickups";
 
 const log = host.debug.log;
 
-export function strings(): String[] {
-  const ourStrings: String[] = [];
-  const dialogueStrings = dialogue.strings();
-  return ourStrings.concat(dialogueStrings);
-}
-
 let player!: Player;
 let tsfid!: i32;
 let snow!: SnowParticles;
@@ -90,11 +84,28 @@ export function initRoom(): void {
   }
 }
 
+export function strings(): String[] {
+  const ourStrings: String[] = [];
+  const dialogueStrings = dialogue.strings();
+  return ourStrings.concat(dialogueStrings);
+}
+
+export function movePlayer(x: f32, y: f32): void {
+  player.direction.x = x;
+  player.direction.y = y;
+}
+
+export function timerEvent(id: u32): void {
+  log(`Timer event: ${id}`);
+}
+
 // Called when an async asset has been loaded
 export function assetLoadedEvent(_id: i32): void {}
 
-export function timeChangedEvent(event: SunEvent): void {
-  log(`Time changed: ${getSunEventName(event)}`);
+export function asyncEvent(id: i32): void {}
+
+export function pickupEvent(slug: string, took: bool): void {
+  log(`Pickup event: ${slug}, ${took}`);
 }
 
 export function buttonPressEvent(slug: string, down: bool): void {
@@ -109,23 +120,6 @@ export function buttonPressEvent(slug: string, down: bool): void {
   }
 }
 
-export function movePlayer(x: f32, y: f32): void {
-  player.direction.x = x;
-  player.direction.y = y;
-}
-
-export function pickupEvent(slug: string, took: bool): void {
-  log(`Pickup event: ${slug}, ${took}`);
-}
-
-export function timerEvent(id: u32): void {
-  log(`Timer event: ${id}`);
-}
-
-export function asyncEvent(id: i32): void {}
-
-export function dialogClosedEvent(passageId: string): void {}
-
 export function tileCollisionEvent(
   initiator: string,
   tsTileId: i32,
@@ -137,6 +131,8 @@ export function tileCollisionEvent(
   // log(`Collision event: ${tsTileId}, ${gid}, ${entered} @ ${column}, ${row}`);
 }
 
+export function dialogClosedEvent(passageId: string): void {}
+
 export function sensorEvent(
   initiator: string,
   sensorName: string,
@@ -147,6 +143,10 @@ export function sensorEvent(
       entered ? "entered" : "left"
     } '${sensorName}'`
   );
+}
+
+export function timeChangedEvent(event: SunEvent): void {
+  log(`Time changed: ${getSunEventName(event)}`);
 }
 
 export function pauseTick(timestep: f32): void {
