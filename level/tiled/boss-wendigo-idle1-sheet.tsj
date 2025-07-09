@@ -1,0 +1,47 @@
+{
+  "columns": 4,
+  "image": "../art/restricted/boss-wendigo-idle1-sheet.png",
+  "imageheight": 120,
+  "imagewidth": 396,
+  "margin": 0,
+  "name": "boss-wendigo-idle1-sheet",
+  "spacing": 0,
+  "tilecount": 4,
+  "tiledversion": "1.11.1-93-ge62b7ff9",
+  "tileheight": 120,
+  "tiles": [
+    {
+      "animation": [
+        {
+          "duration": 200,
+          "tileid": 0
+        },
+        {
+          "duration": 200,
+          "tileid": 1
+        },
+        {
+          "duration": 200,
+          "tileid": 2
+        },
+        {
+          "duration": 200,
+          "tileid": 3
+        }
+      ],
+      "id": 0,
+      "properties": [
+        {
+          "name": "animation",
+          "propertytype": "NPC animation",
+          "type": "string",
+          "value": "Idle"
+        }
+      ],
+      "type": "NPC"
+    }
+  ],
+  "tilewidth": 99,
+  "type": "tileset",
+  "version": "1.10"
+}

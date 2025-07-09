@@ -7,7 +7,7 @@ import { Card } from "@gl/types/card";
 export function card(): Card {
   return {
     level: {
-      name: "Template level",
+      name: "Craster's Keep",
       version: 1,
     },
     credits: [
@@ -17,19 +17,19 @@ export function card(): Card {
         link: "https://x.com/GetLostTheGame",
       },
       {
-        name: "Andrew",
-        role: "Level design",
-        link: "https://x.com/GetLostTheGame",
-      },
-      {
-        name: "Pixel Boy",
-        role: "Music",
-        link: "https://x.com/2Pblog1",
-      },
-      {
-        name: "Pixel Boy",
+        name: "Franuka",
         role: "Tileset artist",
-        link: "https://x.com/2Pblog1",
+        link: "https://x.com/franuka_art",
+      },
+      {
+        name: "SnowHex",
+        role: "Player sprites",
+        link: "https://x.com/SnowHexArt",
+      },
+      {
+        name: "Ben Burnes",
+        role: "Music",
+        link: "https://x.com/ben_burnes",
       },
     ],
   };

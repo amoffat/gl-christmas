@@ -16,10 +16,6 @@ export function entrances(): Entrance[] {
       name: "main",
       exits: [],
     },
-    {
-      name: "south",
-      exits: [],
-    },
   ];
 }
 
@@ -43,10 +39,7 @@ export function entrances(): Entrance[] {
  */
 export function exits(): Exit[] {
   return [
-    { name: "east", preferredEntrance: "" },
-    { name: "west", preferredEntrance: "" },
-    { name: "south", preferredEntrance: "" },
-    { name: "well", preferredEntrance: "" },
-    { name: "death", preferredEntrance: "" },
+    { name: "mine", preferredEntrance: "" },
+    { name: "house", preferredEntrance: "" },
   ];
 }
