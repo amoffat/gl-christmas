@@ -4,6 +4,7 @@ import { ColorMatrixFilter } from "@gl/filters/colormatrix";
 import { String } from "@gl/types/i18n";
 import { getSunEventName, SunEvent } from "@gl/types/time";
 import { Vec2 } from "@gl/utils/la/vec2";
+import { PlayerMovement } from "@gl/utils/movement/topdown";
 import { SnowParticles } from "@gl/utils/particles";
 import { Player } from "@gl/utils/player";
 import * as dialogue from "./generated/dialogue";
@@ -23,6 +24,7 @@ let snow!: SnowParticles;
 let fog!: ColorMatrixFilter;
 let snowstorm!: i32;
 let music!: i32;
+let gifts: u32 = 0;
 
 // Modulate filter.overlay with a random amount, smoothly
 function modulateFog(speed: f32, min: f32, max: f32): void {
@@ -43,7 +45,15 @@ function modulateFog(speed: f32, min: f32, max: f32): void {
 }
 
 export function initRoom(): void {
-  player = Player.default();
+  const pos = host.map.loadEntryPosition();
+  player = new Player(
+    new PlayerMovement(
+      pos.toVec2(), // Initial position
+      new Vec2(200, 200), // Impulse
+      Vec2.fromMagnitude(100), // Max velocity
+      50 // mass
+    )
+  );
 
   fog = new ColorMatrixFilter();
   const fogAmt: f32 = 0.4;
@@ -76,6 +86,7 @@ export function initRoom(): void {
     sprites: [],
   });
 
+  host.ui.setTimer(39, 1, 0, "Time", 0, false, 1000, true);
   host.time.setSunTime(Date.now());
 
   // Tick for about a second so it doesn't start with the snow clumped together
@@ -143,6 +154,14 @@ export function sensorEvent(
       entered ? "entered" : "left"
     } '${sensorName}'`
   );
+
+  if (initiator === "player") {
+    if (sensorName.startsWith("gift/") && entered) {
+      const giftId = sensorName.split("/")[1];
+      gifts++;
+      host.ui.setRating(0, 0, gifts as f32, 8, "gift", "#ff00fb");
+    }
+  }
 }
 
 export function timeChangedEvent(event: SunEvent): void {
