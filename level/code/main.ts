@@ -25,6 +25,7 @@ let fog!: ColorMatrixFilter;
 let snowstorm!: i32;
 let music!: i32;
 let gifts: u32 = 0;
+const asyncTimerId: i32 = 39;
 
 // Modulate filter.overlay with a random amount, smoothly
 function modulateFog(speed: f32, min: f32, max: f32): void {
@@ -86,7 +87,7 @@ export function initRoom(): void {
     sprites: [],
   });
 
-  host.ui.setTimer(39, 1, 0, "Time", 0, false, 1000, true);
+  host.ui.setTimer(asyncTimerId, 1, 0, "", 60, true, 0, true);
   host.time.setSunTime(Date.now());
 
   // Tick for about a second so it doesn't start with the snow clumped together
@@ -113,7 +114,12 @@ export function timerEvent(id: u32): void {
 // Called when an async asset has been loaded
 export function assetLoadedEvent(_id: i32): void {}
 
-export function asyncEvent(id: i32): void {}
+export function asyncEvent(id: i32): void {
+  log(`Async event: ${id}`);
+  if (id === asyncTimerId) {
+    //
+  }
+}
 
 export function pickupEvent(slug: string, took: bool): void {
   log(`Pickup event: ${slug}, ${took}`);
@@ -172,8 +178,6 @@ export function pauseTick(timestep: f32): void {
   snow.tick(timestep);
 }
 
-const now = Date.UTC(2025, 1, 15, 9, 0, 0, 0);
-let offset: i64 = 0;
 export function tickRoom(timestep: f32): void {
   player.tick(timestep);
   snow.tick(timestep);
