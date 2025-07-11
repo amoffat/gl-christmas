@@ -23,9 +23,12 @@ let tsfid!: i32;
 let snow!: SnowParticles;
 let fog!: ColorMatrixFilter;
 let snowstorm!: i32;
-let music!: i32;
+let ambientMusic!: i32;
+let racingMusic!: i32;
 let gifts: u32 = 0;
+const totalGifts: u32 = 8;
 const asyncTimerId: i32 = 39;
+let isRacing: bool = false;
 
 // Modulate filter.overlay with a random amount, smoothly
 function modulateFog(speed: f32, min: f32, max: f32): void {
@@ -79,16 +82,23 @@ export function initRoom(): void {
     volume: 1.0,
     sprites: [],
   });
-  music = host.sound.loadSound({
+  ambientMusic = host.sound.loadSound({
     name: "Musics/Sketchbook 2024-09-22",
     loop: true,
-    autoplay: true,
+    autoplay: false,
     volume: 0.5,
     sprites: [],
   });
+  racingMusic = host.sound.loadSound({
+    name: "restricted/racing-music",
+    loop: true,
+    autoplay: false,
+    volume: 0.8,
+    sprites: [],
+  });
 
-  host.ui.setTimer(asyncTimerId, 1, 0, "", 60, true, 0, true);
   host.time.setSunTime(Date.now());
+  resetGifts();
 
   // Tick for about a second so it doesn't start with the snow clumped together
   for (let i: u32 = 0; i < 120; i++) {
@@ -117,7 +127,7 @@ export function assetLoadedEvent(_id: i32): void {}
 export function asyncEvent(id: i32): void {
   log(`Async event: ${id}`);
   if (id === asyncTimerId) {
-    //
+    failRace();
   }
 }
 
@@ -148,6 +158,60 @@ export function tileCollisionEvent(
   // log(`Collision event: ${tsTileId}, ${gid}, ${entered} @ ${column}, ${row}`);
 }
 
+function setGiftCount(count: u32): void {
+  host.ui.setRating(0, 0, count as f32, 8, "gift", "#ff00fb");
+}
+
+function failRace(): void {
+  host.ui.clearElement(0, 0);
+  host.ui.clearElement(1, 0);
+  gifts = 0;
+  isRacing = false;
+  host.sound.stopSound(racingMusic, -1);
+
+  host.sound.loadSound({
+    name: "gl:fail",
+    loop: false,
+    autoplay: true,
+    volume: 2,
+    sprites: [],
+  });
+  resetGifts();
+}
+
+function captureGift(sensorName: string): void {
+  gifts++;
+  setGiftCount(gifts);
+  host.sprite.toggleSprite(sensorName, false);
+  host.lights.toggleLight(sensorName, false);
+}
+
+function toggleGift(number: u32, enabled: bool): void {
+  const giftSensor = `gift/${number}`;
+  host.sprite.toggleSprite(giftSensor, enabled);
+  host.lights.toggleLight(giftSensor, enabled);
+}
+
+function resetGifts(): void {
+  toggleGift(1, true);
+  for (let i: u32 = 2; i <= totalGifts; i++) {
+    toggleGift(i, false);
+  }
+}
+
+function startRace(): void {
+  isRacing = true;
+  host.sound.playSound({ id: racingMusic, spriteId: "" });
+
+  // 45
+  host.ui.setTimer(asyncTimerId, 1, 0, "", 45, true, 0, true);
+  setGiftCount(1);
+
+  for (let i: u32 = 2; i <= totalGifts; i++) {
+    toggleGift(i, true);
+  }
+}
+
 export function dialogClosedEvent(passageId: string): void {}
 
 export function sensorEvent(
@@ -163,9 +227,15 @@ export function sensorEvent(
 
   if (initiator === "player") {
     if (sensorName.startsWith("gift/") && entered) {
-      const giftId = sensorName.split("/")[1];
-      gifts++;
-      host.ui.setRating(0, 0, gifts as f32, 8, "gift", "#ff00fb");
+      const giftId = parseInt(sensorName.split("/")[1]);
+
+      if (giftId === 1 && !isRacing) {
+        startRace();
+      }
+
+      if (isRacing) {
+        captureGift(sensorName);
+      }
     }
   }
 }

@@ -28,14 +28,40 @@
                  "tileid":3
                 }],
          "id":0,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "id":4,
+             "name":"",
+             "objects":[
+                    {
+                     "height":8,
+                     "id":6,
+                     "name":"",
+                     "rotation":0,
+                     "type":"",
+                     "visible":true,
+                     "width":58,
+                     "x":14,
+                     "y":109
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
          "properties":[
                 {
                  "name":"animation",
-                 "propertytype":"NPC animation",
                  "type":"string",
                  "value":"Idle"
                 }],
-         "type":"NPC"
+         "type":"NPC Tile"
+        }, 
+        {
+         "id":1,
+         "type":"NPC Tile"
         }],
  "tilewidth":99,
  "type":"tileset",
