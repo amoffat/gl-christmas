@@ -16,7 +16,7 @@ export declare function setNumeric(
 
 // Not implemented yet
 export declare function setTimer(
-  asyncId: i32,
+  name: string,
   col: u32,
   row: u32,
   label: string,

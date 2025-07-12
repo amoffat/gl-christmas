@@ -25,9 +25,10 @@ let fog!: ColorMatrixFilter;
 let snowstorm!: i32;
 let ambientMusic!: i32;
 let racingMusic!: i32;
+let failSound!: i32;
+let winSound!: i32;
 let gifts: u32 = 0;
 const totalGifts: u32 = 8;
-const asyncTimerId: i32 = 39;
 let isRacing: bool = false;
 
 // Modulate filter.overlay with a random amount, smoothly
@@ -79,13 +80,13 @@ export function initRoom(): void {
     name: "snowstorm-looped",
     loop: true,
     autoplay: true,
-    volume: 1.0,
+    volume: 0.8,
     sprites: [],
   });
   ambientMusic = host.sound.loadSound({
     name: "Musics/Sketchbook 2024-09-22",
     loop: true,
-    autoplay: false,
+    autoplay: true,
     volume: 0.5,
     sprites: [],
   });
@@ -94,6 +95,20 @@ export function initRoom(): void {
     loop: true,
     autoplay: false,
     volume: 0.8,
+    sprites: [],
+  });
+  failSound = host.sound.loadSound({
+    name: "gl:fail",
+    loop: false,
+    autoplay: false,
+    volume: 2,
+    sprites: [],
+  });
+  winSound = host.sound.loadSound({
+    name: "gl:success",
+    loop: false,
+    autoplay: false,
+    volume: 2,
     sprites: [],
   });
 
@@ -107,7 +122,9 @@ export function initRoom(): void {
 }
 
 export function strings(): String[] {
-  const ourStrings: String[] = [];
+  const ourStrings: String[] = [
+    { key: "nap", values: [{ text: "Take a nap", lang: "en" }] },
+  ];
   const dialogueStrings = dialogue.strings();
   return ourStrings.concat(dialogueStrings);
 }
@@ -124,12 +141,7 @@ export function timerEvent(id: u32): void {
 // Called when an async asset has been loaded
 export function assetLoadedEvent(_id: i32): void {}
 
-export function asyncEvent(id: i32): void {
-  log(`Async event: ${id}`);
-  if (id === asyncTimerId) {
-    failRace();
-  }
-}
+export function asyncEvent(id: i32): void {}
 
 export function pickupEvent(slug: string, took: bool): void {
   log(`Pickup event: ${slug}, ${took}`);
@@ -144,6 +156,8 @@ export function buttonPressEvent(slug: string, down: bool): void {
   if (slug.startsWith("passage/") && down) {
     const passage = slug.split("/")[1];
     dialogue.dispatch(passage);
+  } else if (slug === "nap" && down) {
+    host.map.exit("nap", true);
   }
 }
 
@@ -163,19 +177,25 @@ function setGiftCount(count: u32): void {
 }
 
 function failRace(): void {
+  endRace();
+  host.sound.playSound({ assetId: failSound, spriteId: -1 });
+  dialogue.state.lostRace = true;
+}
+
+function winRace(): void {
+  endRace();
+  host.sound.playSound({ assetId: winSound, spriteId: -1 });
+  dialogue.state.wonRace = true;
+}
+
+function endRace(): void {
   host.ui.clearElement(0, 0);
   host.ui.clearElement(1, 0);
-  gifts = 0;
   isRacing = false;
+  dialogue.state.racing = false;
   host.sound.stopSound(racingMusic, -1);
-
-  host.sound.loadSound({
-    name: "gl:fail",
-    loop: false,
-    autoplay: true,
-    volume: 2,
-    sprites: [],
-  });
+  host.sound.playSound({ assetId: ambientMusic, spriteId: -1 });
+  gifts = 0;
   resetGifts();
 }
 
@@ -184,6 +204,9 @@ function captureGift(sensorName: string): void {
   setGiftCount(gifts);
   host.sprite.toggleSprite(sensorName, false);
   host.lights.toggleLight(sensorName, false);
+  if (gifts >= totalGifts) {
+    winRace();
+  }
 }
 
 function toggleGift(number: u32, enabled: bool): void {
@@ -193,26 +216,33 @@ function toggleGift(number: u32, enabled: bool): void {
 }
 
 function resetGifts(): void {
-  toggleGift(1, true);
-  for (let i: u32 = 2; i <= totalGifts; i++) {
+  for (let i: u32 = 1; i <= totalGifts; i++) {
     toggleGift(i, false);
   }
 }
 
-function startRace(): void {
+export function startRace(): void {
+  host.sound.stopSound(ambientMusic, -1);
+  host.sound.playSound({ assetId: racingMusic, spriteId: -1 });
   isRacing = true;
-  host.sound.playSound({ id: racingMusic, spriteId: "" });
+  dialogue.state.racing = true;
 
-  // 45
-  host.ui.setTimer(asyncTimerId, 1, 0, "", 45, true, 0, true);
-  setGiftCount(1);
+  host.ui.setTimer("race", 1, 0, "", 45, true, 0, true);
+  setGiftCount(0);
 
-  for (let i: u32 = 2; i <= totalGifts; i++) {
+  for (let i: u32 = 1; i <= totalGifts; i++) {
     toggleGift(i, true);
   }
 }
 
 export function dialogClosedEvent(passageId: string): void {}
+
+export function timerCompletedEvent(name: string): void {
+  log(`Timer completed: ${name}`);
+  if (name === "race") {
+    failRace();
+  }
+}
 
 export function sensorEvent(
   initiator: string,
@@ -229,12 +259,16 @@ export function sensorEvent(
     if (sensorName.startsWith("gift/") && entered) {
       const giftId = parseInt(sensorName.split("/")[1]);
 
-      if (giftId === 1 && !isRacing) {
-        startRace();
-      }
-
       if (isRacing) {
         captureGift(sensorName);
+      }
+    } else if (sensorName === "gnome") {
+      dialogue.stage_Craster(entered);
+    } else if (sensorName === "nap") {
+      if (entered) {
+        host.controls.setButtons([{ slug: "nap", label: "nap" }]);
+      } else {
+        host.controls.setButtons([]);
       }
     }
   }

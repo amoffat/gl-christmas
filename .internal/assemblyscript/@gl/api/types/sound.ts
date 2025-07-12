@@ -20,7 +20,6 @@ export class LoadOpts {
 }
 
 export class PlayOpts {
-  /** The ID of the sound to play. */
-  id!: i32;
-  spriteId: string = "";
+  assetId!: i32;
+  spriteId: i32 = -1;
 }

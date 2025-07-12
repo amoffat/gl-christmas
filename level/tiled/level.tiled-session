@@ -89,11 +89,14 @@
                 "y": -1.5
             }
         },
+        "misc.tsj": {
+            "dynamicWrapping": true
+        },
         "tronFreeTiles.tsj": {
             "scaleInDock": 1.5
         }
     },
-    "last.imagePath": "/workspaces/gl-christmas/level/art/restricted",
+    "last.imagePath": "/workspaces/gl-christmas/level/art/restricted/Objects",
     "openFiles": [
         "Trees.tsj",
         "Gnome_01_idle (16x24).tsj",
