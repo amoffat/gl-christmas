@@ -41,5 +41,6 @@ export function exits(): Exit[] {
   return [
     { name: "mine", preferredEntrance: "" },
     { name: "house", preferredEntrance: "" },
+    { name: "nap", preferredEntrance: "" },
   ];
 }
