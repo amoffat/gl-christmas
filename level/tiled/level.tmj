@@ -1109,8 +1109,8 @@
                  "type":"Entry",
                  "visible":true,
                  "width":0,
-                 "x":5,
-                 "y":148
+                 "x":7,
+                 "y":120
                 }, 
                 {
                  "height":0,
@@ -2318,8 +2318,8 @@
                          "type":"",
                          "visible":true,
                          "width":16,
-                         "x":11,
-                         "y":46
+                         "x":24,
+                         "y":47
                         }, 
                         {
                          "gid":280,
@@ -4770,8 +4770,8 @@
                  "type":"Light",
                  "visible":true,
                  "width":0,
-                 "x":18.879,
-                 "y":38.818
+                 "x":32,
+                 "y":39
                 }, 
                 {
                  "height":0,
