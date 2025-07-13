@@ -16,6 +16,10 @@ export function entrances(): Entrance[] {
       name: "main",
       exits: [],
     },
+    {
+      name: "nap",
+      exits: ["936872190/nap"],
+    },
   ];
 }
 
@@ -41,5 +45,6 @@ export function exits(): Exit[] {
   return [
     { name: "mine", preferredEntrance: "" },
     { name: "house", preferredEntrance: "" },
+    { name: "nap", preferredEntrance: "" },
   ];
 }

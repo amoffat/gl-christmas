@@ -1,3 +1,15 @@
+## 0.16.0 - 7/8/25
+
+- Add social image
+- Continuous deployment on non-prod
+- Less glitchy time of day setting
+- Add missing camera interface
+- Engine bump to 1.0.0
+
+## 0.15.2 - 7/5/25
+
+- Skip asset decrypt if template repo
+
 ## 0.15.1 - 7/4/25
 
 - Bugfixes with upgrade script

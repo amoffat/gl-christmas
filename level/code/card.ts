@@ -28,8 +28,13 @@ export function card(): Card {
       },
       {
         name: "Ben Burnes",
-        role: "Music",
+        role: "Main music",
         link: "https://x.com/ben_burnes",
+      },
+      {
+        name: "Janne Seppänen",
+        role: "Racing music",
+        link: "https://www.facebook.com/skyhammersound",
       },
     ],
   };
