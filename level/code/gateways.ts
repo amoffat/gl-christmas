@@ -14,7 +14,11 @@ export function entrances(): Entrance[] {
   return [
     {
       name: "main",
-      exits: ["936872190/water"],
+      exits: [],
+    },
+    {
+      name: "nap",
+      exits: ["936872190/nap"],
     },
   ];
 }

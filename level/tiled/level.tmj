@@ -1111,6 +1111,18 @@
                  "width":0,
                  "x":5,
                  "y":148
+                }, 
+                {
+                 "height":0,
+                 "id":338,
+                 "name":"nap",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Entry",
+                 "visible":true,
+                 "width":0,
+                 "x":-593,
+                 "y":-150
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -5142,7 +5154,7 @@
          "y":0
         }],
  "nextlayerid":42,
- "nextobjectid":338,
+ "nextobjectid":339,
  "orientation":"orthogonal",
  "properties":[
         {
