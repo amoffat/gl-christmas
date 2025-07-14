@@ -30,6 +30,7 @@ let winSound!: i32;
 let gifts: u32 = 0;
 const totalGifts: u32 = 8;
 let isRacing: bool = false;
+let raceTime: i32 = 45; // seconds
 
 // Modulate filter.overlay with a random amount, smoothly
 function modulateFog(speed: f32, min: f32, max: f32): void {
@@ -118,6 +119,12 @@ export function initRoom(): void {
   // Tick for about a second so it doesn't start with the snow clumped together
   for (let i: u32 = 0; i < 120; i++) {
     snow.tick((1000 / 60.0) as f32);
+  }
+
+  // It's harder to do on mobile
+  if (host.platform.isMobile()) {
+    raceTime = 60;
+    dialogue.state.raceTime = raceTime;
   }
 }
 
@@ -228,7 +235,7 @@ export function startRace(): void {
   isRacing = true;
   dialogue.state.racing = true;
 
-  host.ui.setTimer("race", 1, 0, "", 45, true, 0, true);
+  host.ui.setTimer("race", 1, 0, "", raceTime as f32, true, 0, true);
   setGiftCount(0);
 
   for (let i: u32 = 1; i <= totalGifts; i++) {

@@ -1,3 +1,8 @@
+## 7/14/25
+
+- Engine version 3.0.0
+- Adjust race time if on mobile
+
 ## 7/12/25
 
 - Engine bump to 2.0.0
