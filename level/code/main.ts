@@ -30,6 +30,7 @@ let winSound!: i32;
 let gifts: u32 = 0;
 const totalGifts: u32 = 8;
 let isRacing: bool = false;
+let raceTime: i32 = 45; // seconds
 
 // Modulate filter.overlay with a random amount, smoothly
 function modulateFog(speed: f32, min: f32, max: f32): void {
@@ -80,35 +81,35 @@ export function initRoom(): void {
     name: "snowstorm-looped",
     loop: true,
     autoplay: true,
-    volume: 0.8,
+    volume: 0.5,
     sprites: [],
   });
   ambientMusic = host.sound.loadSound({
     name: "Musics/Sketchbook 2024-09-22",
     loop: true,
     autoplay: true,
-    volume: 0.5,
+    volume: 0.3,
     sprites: [],
   });
   racingMusic = host.sound.loadSound({
     name: "restricted/racing-music",
     loop: true,
     autoplay: false,
-    volume: 0.8,
+    volume: 0.5,
     sprites: [],
   });
   failSound = host.sound.loadSound({
     name: "gl:fail",
     loop: false,
     autoplay: false,
-    volume: 2,
+    volume: 1.5,
     sprites: [],
   });
   winSound = host.sound.loadSound({
     name: "gl:success",
     loop: false,
     autoplay: false,
-    volume: 2,
+    volume: 1.5,
     sprites: [],
   });
 
@@ -119,11 +120,18 @@ export function initRoom(): void {
   for (let i: u32 = 0; i < 120; i++) {
     snow.tick((1000 / 60.0) as f32);
   }
+
+  // It's harder to do on mobile
+  if (host.platform.isMobile()) {
+    raceTime = 60;
+    dialogue.state.raceTime = raceTime;
+  }
 }
 
 export function strings(): String[] {
   const ourStrings: String[] = [
     { key: "nap", values: [{ text: "Take a nap", lang: "en" }] },
+    { key: "craster-sign", values: [{ text: "Craster's sign", lang: "en" }] },
   ];
   const dialogueStrings = dialogue.strings();
   return ourStrings.concat(dialogueStrings);
@@ -157,7 +165,7 @@ export function buttonPressEvent(slug: string, down: bool): void {
     const passage = slug.split("/")[1];
     dialogue.dispatch(passage);
   } else if (slug === "nap" && down) {
-    host.map.exit("nap", true);
+    host.map.exit("nap", false);
   }
 }
 
@@ -227,7 +235,7 @@ export function startRace(): void {
   isRacing = true;
   dialogue.state.racing = true;
 
-  host.ui.setTimer("race", 1, 0, "", 45, true, 0, true);
+  host.ui.setTimer("race", 1, 0, "", raceTime as f32, true, 0, true);
   setGiftCount(0);
 
   for (let i: u32 = 1; i <= totalGifts; i++) {
@@ -270,6 +278,7 @@ export function sensorEvent(
       } else {
         host.controls.setButtons([]);
       }
+    } else if (sensorName === "craster-sign" && entered) {
     }
   }
 }

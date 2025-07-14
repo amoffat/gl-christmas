@@ -11,11 +11,27 @@ class State {
   wonRace: bool;
   lostRace: bool;
   angeredCraster: bool;
+  raceTime: i32;
   constructor() {
     this.racing = false;
     this.wonRace = false;
     this.lostRace = false;
     this.angeredCraster = false;
+    this.raceTime = 45;
+  }
+  get params(): string[] {
+    const params = new Array<string>();
+    params.push("racing");
+    params.push(this.racing.toString());
+    params.push("wonRace");
+    params.push(this.wonRace.toString());
+    params.push("lostRace");
+    params.push(this.lostRace.toString());
+    params.push("angeredCraster");
+    params.push(this.angeredCraster.toString());
+    params.push("raceTime");
+    params.push(this.raceTime.toString());
+    return params;
   }
 }
 
@@ -25,17 +41,18 @@ export const state = new State();
 // choice id to our alias choice id.
 const choiceToPassage = new Map<string, string>();
 choiceToPassage.set("1de59e0c", "327d21d8");
-choiceToPassage.set("e4990517", "731c272b");
+choiceToPassage.set("38af8020", "731c272b");
+choiceToPassage.set("4fb4c407", "327d21d8");
 choiceToPassage.set("aa60c7ab", "4ea2afcc");
 choiceToPassage.set("2ac741e6", "327d21d8");
 
 export function strings(): String[] {
   return [
     {
-      key: "interact",
+      key: "talk",
       values: [
         {
-          text: "Interact",
+          text: "Talk",
           lang: "en",
         },
       ],
@@ -72,30 +89,40 @@ export function strings(): String[] {
     },
 
     {
-      key: "1ef33bb9",
+      key: "8aaa2251",
       values: [
         {
-          text: "Huh... ok... I'm actually impressed. Ok, as promised.. TODO",
+          text: "Huh... ok... that was actually impressive. I'd give you your reward, but this level isn't finished yet! Check back soon, Crow!",
           lang: "en",
         },
       ],
     },
 
     {
-      key: "825035dd",
+      key: "4701611e",
       values: [
         {
-          text: "You're a persistent one aren't you?",
+          text: "So I get nothing?",
           lang: "en",
         },
       ],
     },
 
     {
-      key: "96455735",
+      key: "6105f2f7",
       values: [
         {
-          text: "That was awful! You were slipping all over the place! I've never seen such a sorry sight!",
+          text: "You're a persistent one aren't you? Gonna have another go?",
+          lang: "en",
+        },
+      ],
+    },
+
+    {
+      key: "630229d0",
+      values: [
+        {
+          text: "Ha, that was awful! You were slipping all over the place! I've never seen such a sorry sight!",
           lang: "en",
         },
       ],
@@ -162,6 +189,16 @@ export function strings(): String[] {
     },
 
     {
+      key: "38af8020",
+      values: [
+        {
+          text: "Yes, that would be nice.",
+          lang: "en",
+        },
+      ],
+    },
+
+    {
       key: "9f765ac1",
       values: [
         {
@@ -172,20 +209,30 @@ export function strings(): String[] {
     },
 
     {
-      key: "e4990517",
+      key: "f9a09c6a",
       values: [
         {
-          text: "Yes, that would be nice actually",
+          text: "Your lot eats my bread and drinks my ale, but where are you when I need work done?",
           lang: "en",
         },
       ],
     },
 
     {
-      key: "fe8e7135",
+      key: "4fb4c407",
       values: [
         {
-          text: "Yeah, that's how you want it? Enjoy the rest of your short life as a human popsicle. I'll be eating crispy chicken and drinking wine by my toasty hearth. Goodbye, Crow!",
+          text: "I'm busy",
+          lang: "en",
+        },
+      ],
+    },
+
+    {
+      key: "cbf52166",
+      values: [
+        {
+          text: "Yeah, that's how you want it? Enjoy the rest of your short life as a popsicle. I'll be eating crispy chicken and drinking wine by my toasty hearth. Goodbye, Crow!",
           lang: "en",
         },
       ],
@@ -202,40 +249,40 @@ export function strings(): String[] {
     },
 
     {
-      key: "b68451b6",
+      key: "9c18d355",
       values: [
         {
-          text: "Ha! This should be fun. The first gift is to the east. That's the only help you're getting.",
+          text: "Ha! This should be fun. The first gift is to the east. That's the only help you're getting from me.",
           lang: "en",
         },
       ],
     },
 
     {
-      key: "337e547a",
+      key: "1ee58671",
       values: [
         {
-          text: "TODO",
+          text: "Don't take it personally. In the meantime, there is a campsite to the west you can sleep at while I work on your reward.",
           lang: "en",
         },
       ],
     },
 
     {
-      key: "e7ac21cd",
+      key: "8f6e775f",
       values: [
         {
-          text: "Don't take an attitude with me, boy. You Crows are all the same. \"He forgets the well from which he once drank.\" That's your lot.",
+          text: "Don't take an attitude with me, boy. You Crows are all the same.",
           lang: "en",
         },
       ],
     },
 
     {
-      key: "705c3306",
+      key: "79329e65",
       values: [
         {
-          text: "Sorry, have I done something to offend you?",
+          text: "Have I done something to offend you?",
           lang: "en",
         },
       ],
@@ -252,10 +299,10 @@ export function strings(): String[] {
     },
 
     {
-      key: "c6af1532",
+      key: "91d6dc09",
       values: [
         {
-          text: "I had gifts here for my 8 daughters. The wind took them onto the frozen river. If you collect them in the next 45 seconds, I might not let you freeze to death out here.",
+          text: "I had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here.",
           lang: "en",
         },
       ],
@@ -292,10 +339,10 @@ export function strings(): String[] {
     },
 
     {
-      key: "bb280972",
+      key: "4b60cb20",
       values: [
         {
-          text: "Well that's really too bad. No room for you.\n\nBut I tell you what...I had gifts here for my 8 daughters. The wind took them onto the frozen river. If you collect them in the next 45 seconds, I might not let you freeze to death out here.",
+          text: "Well that's really too bad. No room for you here. But I tell you what...\n\nI had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here.",
           lang: "en",
         },
       ],
@@ -332,12 +379,12 @@ export function choiceMadeEvent(passageId: string, choiceId: string): void {
   dispatch(choiceId);
 }
 
-// Show interact button for "Gnome"
+// Show talk button for "Gnome"
 export function stage_Craster(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "interact",
+        label: "talk",
         slug: "passage/4ea2afcc",
       },
     ]);
@@ -353,7 +400,6 @@ export function passage_Craster(): void {
   const animate = true;
   let text = "";
   const choices: string[] = [];
-  const params = new Map<string, string>();
   twine.incrementVisitCount("4ea2afcc");
 
   if (state.angeredCraster) {
@@ -365,15 +411,17 @@ export function passage_Craster(): void {
     // Right, bye
     choices.push("76ad855e");
   } else if (state.wonRace) {
-    // "Huh... ok... I'm actually impressed. Ok, as promised.. TODO"
-    text = "1ef33bb9";
+    // "Huh... ok... that was actually impressive. I'd give you your reward, but this level isn't finished yet! Check back soon, Crow!"
+    text = "8aaa2251";
+    // So I get nothing?
+    choices.push("4701611e");
   } else if (state.lostRace) {
     if (twine.visited("4ea2afcc") > 2) {
-      // "You're a persistent one aren't you?"
-      text = "825035dd";
+      // "You're a persistent one aren't you? Gonna have another go?"
+      text = "6105f2f7";
     } else {
-      // "That was awful! You were slipping all over the place! I've never seen such a sorry sight!"
-      text = "96455735";
+      // "Ha, that was awful! You were slipping all over the place! I've never seen such a sorry sight!"
+      text = "630229d0";
     }
 
     // Let me try again
@@ -392,22 +440,56 @@ export function passage_Craster(): void {
   } else {
     // "Oh look here, it's another lone Crow. Let me guess, this Crow is cold and hungry and wants to come in out of the snow?"
     text = "c198c99a";
+    // Yes, that would be nice.
+    choices.push("38af8020");
+
     // Sorry, who are you?
     choices.push("9f765ac1");
-
-    // Yes, that would be nice actually
-    choices.push("e4990517");
   }
 
-  host.text.display("4ea2afcc", title, text, choices, params, animate);
+  host.text.display("4ea2afcc", title, text, choices, state.params, animate);
 }
 
-// Show interact button for "I'm done, get the gifts yourself"
+// Show talk button for "Have I done something to offend you?"
+export function stage_79329e65(entered: bool): void {
+  if (entered) {
+    host.controls.setButtons([
+      {
+        label: "talk",
+        slug: "passage/79329e65",
+      },
+    ]);
+  } else {
+    host.controls.setButtons([]);
+  }
+}
+
+// "Have I done something to offend you?"
+export function passage_79329e65(): void {
+  // "Craster"
+  const title = "21f8c618";
+  const animate = true;
+  let text = "";
+  const choices: string[] = [];
+  twine.incrementVisitCount("79329e65");
+
+  // "Your lot eats my bread and drinks my ale, but where are you when I need work done?"
+  text = "f9a09c6a";
+  // What do you need?
+  choices.push("52c6a4f6");
+
+  // I'm busy
+  choices.push("4fb4c407");
+
+  host.text.display("79329e65", title, text, choices, state.params, animate);
+}
+
+// Show talk button for "I'm done, get the gifts yourself"
 export function stage_42b6786b(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "interact",
+        label: "talk",
         slug: "passage/42b6786b",
       },
     ]);
@@ -423,22 +505,21 @@ export function passage_42b6786b(): void {
   const animate = true;
   let text = "";
   const choices: string[] = [];
-  const params = new Map<string, string>();
   twine.incrementVisitCount("42b6786b");
 
-  // "Yeah, that's how you want it? Enjoy the rest of your short life as a human popsicle. I'll be eating crispy chicken and drinking wine by my toasty hearth. Goodbye, Crow!"
-  text = "fe8e7135";
+  // "Yeah, that's how you want it? Enjoy the rest of your short life as a popsicle. I'll be eating crispy chicken and drinking wine by my toasty hearth. Goodbye, Crow!"
+  text = "cbf52166";
   state.angeredCraster = true;
 
-  host.text.display("42b6786b", title, text, choices, params, animate);
+  host.text.display("42b6786b", title, text, choices, state.params, animate);
 }
 
-// Show interact button for "Let me try again"
+// Show talk button for "Let me try again"
 export function stage_93206782(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "interact",
+        label: "talk",
         slug: "passage/93206782",
       },
     ]);
@@ -454,22 +535,21 @@ export function passage_93206782(): void {
   const animate = true;
   let text = "";
   const choices: string[] = [];
-  const params = new Map<string, string>();
   twine.incrementVisitCount("93206782");
 
   // "Try to keep your feet under your arse this time, yeah?"
   text = "057e6875";
   level.startRace();
 
-  host.text.display("93206782", title, text, choices, params, animate);
+  host.text.display("93206782", title, text, choices, state.params, animate);
 }
 
-// Show interact button for "Ok let's go"
+// Show talk button for "Ok let's go"
 export function stage_0d7b08dc(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "interact",
+        label: "talk",
         slug: "passage/0d7b08dc",
       },
     ]);
@@ -485,23 +565,22 @@ export function passage_0d7b08dc(): void {
   const animate = true;
   let text = "";
   const choices: string[] = [];
-  const params = new Map<string, string>();
   twine.incrementVisitCount("0d7b08dc");
 
-  // "Ha! This should be fun. The first gift is to the east. That's the only help you're getting."
-  text = "b68451b6";
+  // "Ha! This should be fun. The first gift is to the east. That's the only help you're getting from me."
+  text = "9c18d355";
   level.startRace();
 
-  host.text.display("0d7b08dc", title, text, choices, params, animate);
+  host.text.display("0d7b08dc", title, text, choices, state.params, animate);
 }
 
-// Show interact button for "Sorry, have I done something to offend you?"
-export function stage_705c3306(entered: bool): void {
+// Show talk button for "So I get nothing?"
+export function stage_4701611e(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "interact",
-        slug: "passage/705c3306",
+        label: "talk",
+        slug: "passage/4701611e",
       },
     ]);
   } else {
@@ -509,28 +588,27 @@ export function stage_705c3306(entered: bool): void {
   }
 }
 
-// "Sorry, have I done something to offend you?"
-export function passage_705c3306(): void {
+// "So I get nothing?"
+export function passage_4701611e(): void {
   // "Craster"
   const title = "21f8c618";
   const animate = true;
   let text = "";
   const choices: string[] = [];
-  const params = new Map<string, string>();
-  twine.incrementVisitCount("705c3306");
+  twine.incrementVisitCount("4701611e");
 
-  // "TODO"
-  text = "337e547a";
+  // "Don't take it personally. In the meantime, there is a campsite to the west you can sleep at while I work on your reward."
+  text = "1ee58671";
 
-  host.text.display("705c3306", title, text, choices, params, animate);
+  host.text.display("4701611e", title, text, choices, state.params, animate);
 }
 
-// Show interact button for "Sorry, who are you?"
+// Show talk button for "Sorry, who are you?"
 export function stage_9f765ac1(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "interact",
+        label: "talk",
         slug: "passage/9f765ac1",
       },
     ]);
@@ -546,23 +624,22 @@ export function passage_9f765ac1(): void {
   const animate = true;
   let text = "";
   const choices: string[] = [];
-  const params = new Map<string, string>();
   twine.incrementVisitCount("9f765ac1");
 
-  // "Don't take an attitude with me, boy. You Crows are all the same. \"He forgets the well from which he once drank.\" That's your lot."
-  text = "e7ac21cd";
-  // Sorry, have I done something to offend you?
-  choices.push("705c3306");
+  // "Don't take an attitude with me, boy. You Crows are all the same."
+  text = "8f6e775f";
+  // Have I done something to offend you?
+  choices.push("79329e65");
 
-  host.text.display("9f765ac1", title, text, choices, params, animate);
+  host.text.display("9f765ac1", title, text, choices, state.params, animate);
 }
 
-// Show interact button for "What do you need?"
+// Show talk button for "What do you need?"
 export function stage_52c6a4f6(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "interact",
+        label: "talk",
         slug: "passage/52c6a4f6",
       },
     ]);
@@ -578,26 +655,25 @@ export function passage_52c6a4f6(): void {
   const animate = true;
   let text = "";
   const choices: string[] = [];
-  const params = new Map<string, string>();
   twine.incrementVisitCount("52c6a4f6");
 
-  // "I had gifts here for my 8 daughters. The wind took them onto the frozen river. If you collect them in the next 45 seconds, I might not let you freeze to death out here."
-  text = "c6af1532";
+  // "I had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here."
+  text = "91d6dc09";
   // Ok let's go
   choices.push("0d7b08dc");
 
   // Maybe later
   choices.push("2ac741e6");
 
-  host.text.display("52c6a4f6", title, text, choices, params, animate);
+  host.text.display("52c6a4f6", title, text, choices, state.params, animate);
 }
 
-// Show interact button for "no-deal"
+// Show talk button for "no-deal"
 export function stage_327d21d8(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "interact",
+        label: "talk",
         slug: "passage/327d21d8",
       },
     ]);
@@ -613,21 +689,20 @@ export function passage_327d21d8(): void {
   const animate = true;
   let text = "";
   const choices: string[] = [];
-  const params = new Map<string, string>();
   twine.incrementVisitCount("327d21d8");
 
   // "It's no skin off my hide."
   text = "f004de8e";
 
-  host.text.display("327d21d8", title, text, choices, params, animate);
+  host.text.display("327d21d8", title, text, choices, state.params, animate);
 }
 
-// Show interact button for "yes-warm"
+// Show talk button for "yes-warm"
 export function stage_731c272b(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "interact",
+        label: "talk",
         slug: "passage/731c272b",
       },
     ]);
@@ -643,18 +718,17 @@ export function passage_731c272b(): void {
   const animate = true;
   let text = "";
   const choices: string[] = [];
-  const params = new Map<string, string>();
   twine.incrementVisitCount("731c272b");
 
-  // "Well that's really too bad. No room for you.\n\nBut I tell you what...I had gifts here for my 8 daughters. The wind took them onto the frozen river. If you collect them in the next 45 seconds, I might not let you freeze to death out here."
-  text = "bb280972";
+  // "Well that's really too bad. No room for you here. But I tell you what...\n\nI had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here."
+  text = "4b60cb20";
   // Ok let's go
   choices.push("0d7b08dc");
 
   // Maybe later
   choices.push("2ac741e6");
 
-  host.text.display("731c272b", title, text, choices, params, animate);
+  host.text.display("731c272b", title, text, choices, state.params, animate);
 }
 
 export function dispatch(passageId: string): void {
@@ -663,6 +737,11 @@ export function dispatch(passageId: string): void {
   if (passageId === "4ea2afcc") {
     found = true;
     passage_Craster();
+  }
+
+  if (passageId === "79329e65") {
+    found = true;
+    passage_79329e65();
   }
 
   if (passageId === "42b6786b") {
@@ -680,9 +759,9 @@ export function dispatch(passageId: string): void {
     passage_0d7b08dc();
   }
 
-  if (passageId === "705c3306") {
+  if (passageId === "4701611e") {
     found = true;
-    passage_705c3306();
+    passage_4701611e();
   }
 
   if (passageId === "9f765ac1") {

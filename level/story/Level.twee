@@ -28,12 +28,13 @@ I've nothing to say to you.
 What are you still talking to me for? Hurry up and get my gifts, Crow!
 [[Right, bye]]
 << elseif $wonRace >>
-Huh... ok... I'm actually impressed. Ok, as promised.. TODO
+Huh... ok... that was actually impressive. I'd give you your reward, but this level isn't finished yet! Check back soon, Crow!
+[[So I get nothing?]]
 << elseif $lostRace >>
     << if visited() > 2 >>
-You're a persistent one aren't you?
+You're a persistent one aren't you? Gonna have another go?
     << else >>
-That was awful! You were slipping all over the place! I've never seen such a sorry sight!
+Ha, that was awful! You were slipping all over the place! I've never seen such a sorry sight!
     <</if>>
 [[Let me try again]]
 [[I'm done, get the gifts yourself]]
@@ -43,13 +44,20 @@ Oh look who's back. I've nothing for you, unless you're willing to work.
 [[I'm busy right now|no-deal]]
 << else >>
 Oh look here, it's another lone Crow. Let me guess, this Crow is cold and hungry and wants to come in out of the snow?
+[[Yes, that would be nice.|yes-warm]]
 [[Sorry, who are you?]]
-[[Yes, that would be nice actually|yes-warm]]
 <</if>>
 
 
+:: Have I done something to offend you? {"position":"1375,925","size":"100,100"}
+Your lot eats my bread and drinks my ale, but where are you when I need work done?
+
+[[What do you need?]]
+[[I'm busy|no-deal]]
+
+
 :: I'm done, get the gifts yourself {"position":"1175,850","size":"100,100"}
-Yeah, that's how you want it? Enjoy the rest of your short life as a human popsicle. I'll be eating crispy chicken and drinking wine by my toasty hearth. Goodbye, Crow!
+Yeah, that's how you want it? Enjoy the rest of your short life as a popsicle. I'll be eating crispy chicken and drinking wine by my toasty hearth. Goodbye, Crow!
 <<set $angeredCraster to true>>
 
 
@@ -59,7 +67,7 @@ Try to keep your feet under your arse this time, yeah?
 
 
 :: Ok let's go {"position":"1700,1000","size":"100,100"}
-Ha! This should be fun. The first gift is to the east. That's the only help you're getting.
+Ha! This should be fun. The first gift is to the east. That's the only help you're getting from me.
 <<level.startRace()>>
 
 
@@ -67,19 +75,18 @@ Ha! This should be fun. The first gift is to the east. That's the only help you'
 
 
 
-:: Sorry, have I done something to offend you? {"position":"1400,950","size":"100,100"}
-TODO
+:: So I get nothing? {"position":"1050,1025","size":"100,100"}
+Don't take it personally. In the meantime, there is a campsite to the west you can sleep at while I work on your reward.
 
 
-:: Sorry, who are you? {"position":"1450,725","size":"100,100"}
-Don't take an attitude with me, boy. You Crows are all the same. "He forgets the well from which he once drank." That's your lot.
+:: Sorry, who are you? {"position":"1400,700","size":"100,100"}
+Don't take an attitude with me, boy. You Crows are all the same.
 
-[[Sorry, have I done something to offend you?]]
+[[Have I done something to offend you?]]
 
 
 :: Start {"position":"1675,100","size":"100,100"}
 [[Talk to Gnome|Gnome]]
-
 
 
 :: StoryInit {"position":"925,75","size":"100,100"}
@@ -87,10 +94,11 @@ Don't take an attitude with me, boy. You Crows are all the same. "He forgets the
 <<set $wonRace to false>>
 <<set $lostRace to false>>
 <<set $angeredCraster to false>>
+<<set $raceTime to 45>>
 
 
 :: What do you need? {"position":"2050,525","size":"100,100"}
-I had gifts here for my 8 daughters. The wind took them onto the frozen river. If you collect them in the next 45 seconds, I might not let you freeze to death out here.
+I had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here.
 
 [[Ok let's go]]
 [[Maybe later|no-deal]]
@@ -101,9 +109,9 @@ It's no skin off my hide.
 
 
 :: yes-warm {"position":"1950,925","size":"100,100"}
-Well that's really too bad. No room for you.
+Well that's really too bad. No room for you here. But I tell you what...
 
-But I tell you what...I had gifts here for my 8 daughters. The wind took them onto the frozen river. If you collect them in the next 45 seconds, I might not let you freeze to death out here.
+I had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here.
 
 [[Ok let's go]]
 [[Maybe later|no-deal]]
