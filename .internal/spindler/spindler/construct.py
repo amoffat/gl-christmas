@@ -56,6 +56,10 @@ def make_state_class_name(suffix: str) -> str:
     return f"State_{suffix}"
 
 
+def is_state_object(type_name: str) -> bool:
+    return type_name.startswith("State_") or type_name == "State"
+
+
 def map_op(op: str) -> str:
     """
     Maps SugarCube operators to their corresponding AS operators.
@@ -130,9 +134,23 @@ def create_state_class(name: str, variable_types: dict[str, Variable]) -> str:
     # variables in the state, for easy access in the level code.
     state_class += "get params(): string[] {\n"
     state_class += "const params = new Array<string>();\n"
-    for var_name in variable_types:
-        state_class += f'params.push("{var_name}");\n'
-        state_class += f"params.push(this.{var_name}.toString());\n"
+    for var_name, variable in variable_types.items():
+        # If the variable is a state object, we need to flatten that object's
+        # parameters into the params array, and prefix them with the variable
+        # name.
+        if is_state_object(variable.type):
+            name_prefix = var_name
+            state_class += (
+                f"for (let i: i32 = 0; i < this.{var_name}.params.length; i+=2) {{\n"
+            )
+            state_class += f"const name = this.{var_name}.params[i];\n"
+            state_class += f"const value = this.{var_name}.params[i + 1];\n"
+            state_class += f'params.push("{name_prefix}." + name);\n'
+            state_class += "params.push(value);\n"
+            state_class += "}\n"
+        else:
+            state_class += f'params.push("{var_name}");\n'
+            state_class += f"params.push(this.{var_name}.toString());\n"
     state_class += "return params;\n"
     state_class += "}\n"
     state_class += "}"
