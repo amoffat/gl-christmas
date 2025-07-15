@@ -30,7 +30,8 @@ let winSound!: i32;
 let gifts: u32 = 0;
 const totalGifts: u32 = 8;
 let isRacing: bool = false;
-let raceTime: i32 = 45; // seconds
+let raceTime: i32 = 50; // seconds
+let raceTimeMobile: i32 = 65; // seconds
 
 // Modulate filter.overlay with a random amount, smoothly
 function modulateFog(speed: f32, min: f32, max: f32): void {
@@ -123,9 +124,9 @@ export function initRoom(): void {
 
   // It's harder to do on mobile
   if (host.platform.isMobile()) {
-    raceTime = 60;
-    dialogue.state.raceTime = raceTime;
+    raceTime = raceTimeMobile;
   }
+  dialogue.state.raceTime = raceTime;
 }
 
 export function strings(): String[] {
