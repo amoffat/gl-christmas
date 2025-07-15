@@ -125,8 +125,8 @@ export function initRoom(): void {
   // It's harder to do on mobile
   if (host.platform.isMobile()) {
     raceTime = raceTimeMobile;
-    dialogue.state.raceTime = raceTime;
   }
+  dialogue.state.raceTime = raceTime;
 }
 
 export function strings(): String[] {
