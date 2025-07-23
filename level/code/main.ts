@@ -1,7 +1,6 @@
 import * as host from "@gl/api/w2h/host";
 
 import { ColorMatrixFilter } from "@gl/filters/colormatrix";
-import { String } from "@gl/types/i18n";
 import { getSunEventName, SunEvent } from "@gl/types/time";
 import { Vec2 } from "@gl/utils/la/vec2";
 import { PlayerMovement } from "@gl/utils/movement/topdown";
@@ -127,15 +126,6 @@ export function initRoom(): void {
     raceTime = raceTimeMobile;
   }
   dialogue.state.raceTime = raceTime;
-}
-
-export function strings(): String[] {
-  const ourStrings: String[] = [
-    { key: "nap", values: [{ text: "Take a nap", lang: "en" }] },
-    { key: "craster-sign", values: [{ text: "Craster's sign", lang: "en" }] },
-  ];
-  const dialogueStrings = dialogue.strings();
-  return ourStrings.concat(dialogueStrings);
 }
 
 export function movePlayer(x: f32, y: f32): void {
