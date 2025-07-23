@@ -5,6 +5,7 @@ import * as level from "../main";
 
 const log = host.debug.log;
 const logError = host.debug.logError;
+const interactButton = "interact";
 
 class State {
   racing: bool;
@@ -40,325 +41,11 @@ export const state = new State();
 // If we're using an alias on our link, then we need to map from our shown
 // choice id to our alias choice id.
 const choiceToPassage = new Map<string, string>();
-choiceToPassage.set("1de59e0c", "327d21d8");
-choiceToPassage.set("38af8020", "731c272b");
-choiceToPassage.set("4fb4c407", "327d21d8");
-choiceToPassage.set("aa60c7ab", "4ea2afcc");
-choiceToPassage.set("2ac741e6", "327d21d8");
-
-export function strings(): String[] {
-  return [
-    {
-      key: "talk",
-      values: [
-        {
-          text: "Talk",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "c665b796",
-      values: [
-        {
-          text: "I've nothing to say to you.",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "a38ee7f7",
-      values: [
-        {
-          text: "What are you still talking to me for? Hurry up and get my gifts, Crow!",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "76ad855e",
-      values: [
-        {
-          text: "Right, bye",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "8aaa2251",
-      values: [
-        {
-          text: "Huh... ok... that was actually impressive. I'd give you your reward, but this level isn't finished yet! Check back soon, Crow!",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "4701611e",
-      values: [
-        {
-          text: "So I get nothing?",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "6105f2f7",
-      values: [
-        {
-          text: "You're a persistent one aren't you? Gonna have another go?",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "630229d0",
-      values: [
-        {
-          text: "Ha, that was awful! You were slipping all over the place! I've never seen such a sorry sight!",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "93206782",
-      values: [
-        {
-          text: "Let me try again",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "42b6786b",
-      values: [
-        {
-          text: "I'm done, get the gifts yourself",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "b5b6165e",
-      values: [
-        {
-          text: "Oh look who's back. I've nothing for you, unless you're willing to work.",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "52c6a4f6",
-      values: [
-        {
-          text: "What do you need?",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "1de59e0c",
-      values: [
-        {
-          text: "I'm busy right now",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "c198c99a",
-      values: [
-        {
-          text: "Oh look here, it's another lone Crow. Let me guess, this Crow is cold and hungry and wants to come in out of the snow?",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "38af8020",
-      values: [
-        {
-          text: "Yes, that would be nice.",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "9f765ac1",
-      values: [
-        {
-          text: "Sorry, who are you?",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "f9a09c6a",
-      values: [
-        {
-          text: "Your lot eats my bread and drinks my ale, but where are you when I need work done?",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "4fb4c407",
-      values: [
-        {
-          text: "I'm busy",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "cbf52166",
-      values: [
-        {
-          text: "Yeah, that's how you want it? Enjoy the rest of your short life as a popsicle. I'll be eating crispy chicken and drinking wine by my toasty hearth. Goodbye, Crow!",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "057e6875",
-      values: [
-        {
-          text: "Try to keep your feet under your arse this time, yeah?",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "9c18d355",
-      values: [
-        {
-          text: "Ha! This should be fun. The first gift is to the east. That's the only help you're getting from me.",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "1ee58671",
-      values: [
-        {
-          text: "Don't take it personally. In the meantime, there is a campsite to the west you can sleep at while I work on your reward.",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "8f6e775f",
-      values: [
-        {
-          text: "Don't take an attitude with me, boy. You Crows are all the same.",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "79329e65",
-      values: [
-        {
-          text: "Have I done something to offend you?",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "aa60c7ab",
-      values: [
-        {
-          text: "Talk to Gnome",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "91d6dc09",
-      values: [
-        {
-          text: "I had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here.",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "0d7b08dc",
-      values: [
-        {
-          text: "Ok let's go",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "2ac741e6",
-      values: [
-        {
-          text: "Maybe later",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "f004de8e",
-      values: [
-        {
-          text: "It's no skin off my hide.",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "4b60cb20",
-      values: [
-        {
-          text: "Well that's really too bad. No room for you here. But I tell you what...\n\nI had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here.",
-          lang: "en",
-        },
-      ],
-    },
-
-    {
-      key: "21f8c618",
-      values: [
-        {
-          text: "Craster",
-          lang: "en",
-        },
-      ],
-    },
-  ];
-}
+choiceToPassage.set("3a8e31e5", "327d21d8");
+choiceToPassage.set("ea478db0", "731c272b");
+choiceToPassage.set("0006795b", "327d21d8");
+choiceToPassage.set("3279dfab", "4ea2afcc");
+choiceToPassage.set("94f8cece", "327d21d8");
 
 /**
  * Called when the player interacts with a choice dialog.
@@ -379,12 +66,12 @@ export function choiceMadeEvent(passageId: string, choiceId: string): void {
   dispatch(choiceId);
 }
 
-// Show talk button for "Gnome"
+// Show interact button for "Gnome"
 export function stage_Craster(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/4ea2afcc",
       },
     ]);
@@ -404,24 +91,24 @@ export function passage_Craster(): void {
 
   if (state.angeredCraster) {
     // "I've nothing to say to you."
-    text = "c665b796";
+    text = "2dba5c1e";
   } else if (state.racing) {
     // "What are you still talking to me for? Hurry up and get my gifts, Crow!"
-    text = "a38ee7f7";
+    text = "3f8ecbc0";
     // Right, bye
     choices.push("76ad855e");
   } else if (state.wonRace) {
     // "Huh... ok... that was actually impressive. I'd give you your reward, but this level isn't finished yet! Check back soon, Crow!"
-    text = "8aaa2251";
+    text = "ce3f2074";
     // So I get nothing?
     choices.push("4701611e");
   } else if (state.lostRace) {
     if (twine.visited("4ea2afcc") > 2) {
       // "You're a persistent one aren't you? Gonna have another go?"
-      text = "6105f2f7";
+      text = "03ba139a";
     } else {
       // "Ha, that was awful! You were slipping all over the place! I've never seen such a sorry sight!"
-      text = "630229d0";
+      text = "ec95b2d0";
     }
 
     // Let me try again
@@ -431,17 +118,17 @@ export function passage_Craster(): void {
     choices.push("42b6786b");
   } else if (twine.visited("4ea2afcc") > 1) {
     // "Oh look who's back. I've nothing for you, unless you're willing to work."
-    text = "b5b6165e";
+    text = "afab7423";
     // What do you need?
     choices.push("52c6a4f6");
 
     // I'm busy right now
-    choices.push("1de59e0c");
+    choices.push("3a8e31e5");
   } else {
     // "Oh look here, it's another lone Crow. Let me guess, this Crow is cold and hungry and wants to come in out of the snow?"
-    text = "c198c99a";
+    text = "a1d93243";
     // Yes, that would be nice.
-    choices.push("38af8020");
+    choices.push("ea478db0");
 
     // Sorry, who are you?
     choices.push("9f765ac1");
@@ -450,12 +137,12 @@ export function passage_Craster(): void {
   host.text.display("4ea2afcc", title, text, choices, state.params, animate);
 }
 
-// Show talk button for "Have I done something to offend you?"
+// Show interact button for "Have I done something to offend you?"
 export function stage_79329e65(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/79329e65",
       },
     ]);
@@ -474,22 +161,22 @@ export function passage_79329e65(): void {
   twine.incrementVisitCount("79329e65");
 
   // "Your lot eats my bread and drinks my ale, but where are you when I need work done?"
-  text = "f9a09c6a";
+  text = "40a39c3d";
   // What do you need?
   choices.push("52c6a4f6");
 
   // I'm busy
-  choices.push("4fb4c407");
+  choices.push("0006795b");
 
   host.text.display("79329e65", title, text, choices, state.params, animate);
 }
 
-// Show talk button for "I'm done, get the gifts yourself"
+// Show interact button for "I'm done, get the gifts yourself"
 export function stage_42b6786b(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/42b6786b",
       },
     ]);
@@ -508,18 +195,18 @@ export function passage_42b6786b(): void {
   twine.incrementVisitCount("42b6786b");
 
   // "Yeah, that's how you want it? Enjoy the rest of your short life as a popsicle. I'll be eating crispy chicken and drinking wine by my toasty hearth. Goodbye, Crow!"
-  text = "cbf52166";
+  text = "b1398514";
   state.angeredCraster = true;
 
   host.text.display("42b6786b", title, text, choices, state.params, animate);
 }
 
-// Show talk button for "Let me try again"
+// Show interact button for "Let me try again"
 export function stage_93206782(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/93206782",
       },
     ]);
@@ -538,18 +225,18 @@ export function passage_93206782(): void {
   twine.incrementVisitCount("93206782");
 
   // "Try to keep your feet under your arse this time, yeah?"
-  text = "057e6875";
+  text = "2025e6d9";
   level.startRace();
 
   host.text.display("93206782", title, text, choices, state.params, animate);
 }
 
-// Show talk button for "Ok let's go"
+// Show interact button for "Ok let's go"
 export function stage_0d7b08dc(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/0d7b08dc",
       },
     ]);
@@ -568,18 +255,18 @@ export function passage_0d7b08dc(): void {
   twine.incrementVisitCount("0d7b08dc");
 
   // "Ha! This should be fun. The first gift is to the east. That's the only help you're getting from me."
-  text = "9c18d355";
+  text = "47862c45";
   level.startRace();
 
   host.text.display("0d7b08dc", title, text, choices, state.params, animate);
 }
 
-// Show talk button for "So I get nothing?"
+// Show interact button for "So I get nothing?"
 export function stage_4701611e(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/4701611e",
       },
     ]);
@@ -603,12 +290,12 @@ export function passage_4701611e(): void {
   host.text.display("4701611e", title, text, choices, state.params, animate);
 }
 
-// Show talk button for "Sorry, who are you?"
+// Show interact button for "Sorry, who are you?"
 export function stage_9f765ac1(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/9f765ac1",
       },
     ]);
@@ -627,19 +314,19 @@ export function passage_9f765ac1(): void {
   twine.incrementVisitCount("9f765ac1");
 
   // "Don't take an attitude with me, boy. You Crows are all the same."
-  text = "8f6e775f";
+  text = "eddd5658";
   // Have I done something to offend you?
   choices.push("79329e65");
 
   host.text.display("9f765ac1", title, text, choices, state.params, animate);
 }
 
-// Show talk button for "What do you need?"
+// Show interact button for "What do you need?"
 export function stage_52c6a4f6(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/52c6a4f6",
       },
     ]);
@@ -658,22 +345,22 @@ export function passage_52c6a4f6(): void {
   twine.incrementVisitCount("52c6a4f6");
 
   // "I had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here."
-  text = "91d6dc09";
+  text = "1bd50d4e";
   // Ok let's go
   choices.push("0d7b08dc");
 
   // Maybe later
-  choices.push("2ac741e6");
+  choices.push("94f8cece");
 
   host.text.display("52c6a4f6", title, text, choices, state.params, animate);
 }
 
-// Show talk button for "no-deal"
+// Show interact button for "no-deal"
 export function stage_327d21d8(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/327d21d8",
       },
     ]);
@@ -697,12 +384,12 @@ export function passage_327d21d8(): void {
   host.text.display("327d21d8", title, text, choices, state.params, animate);
 }
 
-// Show talk button for "yes-warm"
+// Show interact button for "yes-warm"
 export function stage_731c272b(entered: bool): void {
   if (entered) {
     host.controls.setButtons([
       {
-        label: "talk",
+        label: interactButton,
         slug: "passage/731c272b",
       },
     ]);
@@ -721,12 +408,12 @@ export function passage_731c272b(): void {
   twine.incrementVisitCount("731c272b");
 
   // "Well that's really too bad. No room for you here. But I tell you what...\n\nI had gifts here for my daughters. The wind blew them onto the frozen river. If you collect them in the next $raceTime seconds, I might not let you freeze to death out here."
-  text = "4b60cb20";
+  text = "1dc1822e";
   // Ok let's go
   choices.push("0d7b08dc");
 
   // Maybe later
-  choices.push("2ac741e6");
+  choices.push("94f8cece");
 
   host.text.display("731c272b", title, text, choices, state.params, animate);
 }
@@ -788,4 +475,3 @@ export function dispatch(passageId: string): void {
     log(`No passage found for ${passageId}, does it have content?`);
   }
 }
-
