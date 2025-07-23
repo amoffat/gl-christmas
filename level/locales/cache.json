@@ -2664,6 +2664,78 @@
           "input": "02e68e106a126586fccd4ccd796e07f225230c40"
         }
       }
+    },
+    "nap": {
+      "hashes": {
+        "en": {
+          "output": "f83a16a9150ab0f9039283d222019990b746a755",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "es": {
+          "output": "142a697dbaf4397c74bfe8ffa6453f6eeed826d2",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "pt-br": {
+          "output": "693ae563d4f7fe7afaa3f4f1b4fc1d8c61fd47eb",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "fr": {
+          "output": "2e0fa3d7dfa8f4a6b8b8c79a210e5380e8149e7b",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "de": {
+          "output": "0d527bc33a818766db02909ea027b6bfa4f520a7",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "it": {
+          "output": "a0dd217cf58ec0460ac49e84ed33936956f89a8f",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "ru": {
+          "output": "2fb145190e413ccf3801fb31e4859249e6c20389",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "ja": {
+          "output": "b497dbdca7bbc6fbf7b2f3e2ba923574043d14f5",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "ko": {
+          "output": "310913b7fb9b16c0324d984663317194e159590f",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "zh-cn": {
+          "output": "4b53441d96f45b65bed0324bca9daf0e2490aa89",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "zh-tw": {
+          "output": "e740da654b61a3a569907d365d1df1411a360acd",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "ar": {
+          "output": "b144c55d7ca4ffb61f1350a01b7bb8161d5984d4",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "tr": {
+          "output": "35430fda935896c6403b180ebd596609a8aa2761",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "pl": {
+          "output": "618fc55d4fd70e66aaaa3f0e79c73c43b845eda5",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "th": {
+          "output": "6f1ee820f5b678cd2a0f28658038cd09499e1bc8",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "vi": {
+          "output": "180eda4777f6f14cd99e3f760507a3d0cfcc0c78",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        },
+        "id": {
+          "output": "720f9bca15d3395f13cfe84bd472f284d1db8bef",
+          "input": "f83a16a9150ab0f9039283d222019990b746a755"
+        }
+      }
     }
   }
 }
